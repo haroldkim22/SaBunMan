@@ -39,11 +39,24 @@ const PostDetail = () => {
   const load = async () => {
     if (!id) return;
     const [{ data: p }, { data: cs }] = await Promise.all([
-      supabase.from("posts").select("*, profiles(display_name, avatar_url)").eq("id", id).maybeSingle(),
-      supabase.from("comments").select("*, profiles(display_name, avatar_url)").eq("post_id", id).order("created_at"),
+      supabase.from("posts").select("*").eq("id", id).maybeSingle(),
+      supabase.from("comments").select("*").eq("post_id", id).order("created_at"),
     ]);
-    setPost(p as any);
-    setComments((cs ?? []) as any);
+
+    // profiles는 FK가 없어 별도 조회
+    const userIds = Array.from(new Set([
+      ...(p ? [p.author_id] : []),
+      ...((cs ?? []).map((c: any) => c.author_id)),
+    ]));
+    const profileMap: Record<string, any> = {};
+    if (userIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles").select("id, display_name, avatar_url").in("id", userIds);
+      (profs ?? []).forEach((pr: any) => { profileMap[pr.id] = pr; });
+    }
+
+    setPost(p ? ({ ...p, profiles: profileMap[(p as any).author_id] ?? null } as any) : null);
+    setComments(((cs ?? []) as any[]).map((c) => ({ ...c, profiles: profileMap[c.author_id] ?? null })) as any);
     setLoading(false);
   };
 

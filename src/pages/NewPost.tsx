@@ -154,8 +154,8 @@ const NewPost = () => {
           <div className="space-y-6">
             <div>
               <Label className="mb-2 block">발견 위치</Label>
-              <div className="flex gap-2 mb-3">
-                {[1, 2, 3, 4].map((f) => (
+              <div className="flex gap-2 mb-3 flex-wrap">
+                {[1, 2, 3, 4, 5].map((f) => (
                   <Button key={f} type="button" size="sm"
                     variant={floor === f ? "default" : "outline"}
                     className={floor === f ? "gradient-hero text-primary-foreground border-0" : ""}

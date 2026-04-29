@@ -33,10 +33,19 @@ const Feed = () => {
     (async () => {
       const { data, error } = await supabase
         .from("posts")
-        .select("*, profiles(display_name, avatar_url)")
+        .select("*")
         .order("created_at", { ascending: false });
       if (error) toast.error("불러오기 실패");
-      else setPosts((data ?? []) as any);
+      else {
+        const ids = Array.from(new Set((data ?? []).map((p: any) => p.author_id)));
+        const profileMap: Record<string, any> = {};
+        if (ids.length) {
+          const { data: profs } = await supabase
+            .from("profiles").select("id, display_name, avatar_url").in("id", ids);
+          (profs ?? []).forEach((pr: any) => { profileMap[pr.id] = pr; });
+        }
+        setPosts(((data ?? []) as any[]).map((p) => ({ ...p, profiles: profileMap[p.author_id] ?? null })) as any);
+      }
       setLoading(false);
     })();
   }, []);
