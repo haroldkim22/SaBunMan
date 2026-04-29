@@ -52,7 +52,7 @@ const Map = () => {
         <div className="grid lg:grid-cols-[200px_1fr] gap-6">
           <div className="space-y-2">
             <div className="text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
-            {[4, 3, 2, 1].map((f) => (
+            {[5, 4, 3, 2, 1].map((f) => (
               <button key={f} onClick={() => setFloor(f)}
                 className={`w-full text-left p-4 rounded-xl border transition-all ${
                   floor === f ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/50"
