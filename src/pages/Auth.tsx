@@ -91,7 +91,7 @@ const Auth = () => {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <div className="font-display font-bold text-xl leading-none">사분만</div>
+            <div className="font-display font-bold text-xl leading-none">사 분 만</div>
             <div className="text-[10px] tracking-wider opacity-70">SASA LOST & FOUND</div>
           </div>
         </Link>
@@ -103,7 +103,7 @@ const Auth = () => {
             사진, 위치, 해시태그로 누구나 쉽게 분실물을 등록하고 찾아봅니다.
           </p>
         </div>
-        <div className="relative text-xs opacity-60">TEAM5 · 정과프 프로젝트</div>
+        <div className="relative text-xs opacity-60">2026 정보과학프로젝트</div>
       </div>
 
       <div className="flex items-center justify-center p-6 md:p-12 bg-background">
