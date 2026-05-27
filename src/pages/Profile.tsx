@@ -70,10 +70,10 @@ const Profile = () => {
 
         {editing && (
           <div className="mt-6 rounded-2xl border border-border bg-card p-6 space-y-4">
-            <div>
+            {/* <div>
               <Label htmlFor="n">이름</Label>
               <Input id="n" value={name} onChange={(e) => setName(e.target.value)} maxLength={40} className="mt-2" />
-            </div>
+            </div> */}
             <div>
               <Label htmlFor="b">자기소개</Label>
               <Textarea id="b" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} maxLength={200} className="mt-2" />
