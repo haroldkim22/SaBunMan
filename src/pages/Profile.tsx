@@ -106,7 +106,7 @@ const Profile = () => {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold line-clamp-1">{p.title}</h3>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {p.type === "found" ? "찾음" : "찾는중"} · {p.floor ? `${p.floor}F` : ""}
+                        {p.type === "found" ? "주웠어요" : "잃어버렸어요"} · {p.floor ? `${p.floor}F` : ""}
                       </p>
                     </div>
                     <Badge variant={p.status === "resolved" ? "secondary" : "default"} className="text-[10px]">
