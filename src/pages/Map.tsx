@@ -43,7 +43,7 @@ const Map = () => {
               <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
                 className={filter === f ? "gradient-hero text-primary-foreground border-0" : ""}
                 onClick={() => setFilter(f)}>
-                {f === "all" ? "전체" : f === "found" ? "찾음" : "찾는중"}
+                {f === "all" ? "전체" : f === "found" ? "주웠어요" : "잃어버렸어요"}
               </Button>
             ))}
           </div>
@@ -68,8 +68,8 @@ const Map = () => {
           <div>
             <FloorMap floor={floor} markers={visible} onMarkerClick={(id) => nav(`/post/${id}`)} />
             <div className="mt-4 flex gap-4 text-sm">
-              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-success" />찾음</div>
-              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-warning" />찾는중</div>
+              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-success" />주웠어요</div>
+              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-warning" />잃어버렸어요</div>
               <Badge variant="secondary" className="ml-auto">{visible.length}개 표시중</Badge>
             </div>
           </div>
