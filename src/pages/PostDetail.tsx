@@ -23,7 +23,7 @@ type Post = {
 type Comment = { id: string; content: string; created_at: string; author_id: string;
   profiles?: { display_name: string; avatar_url: string | null } | null; };
 
-const typeLabel = { found: "찾음", lost: "찾는중" } as const;
+const typeLabel = { found: "주웠어요", lost: "잃어버렸어요" } as const;
 const typeStyle = { found: "bg-success text-success-foreground", lost: "bg-warning text-warning-foreground" } as const;
 
 const PostDetail = () => {
