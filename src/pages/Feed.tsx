@@ -92,7 +92,7 @@ const Feed = () => {
                   size="sm" onClick={() => setFilter(f)}
                   className={filter === f ? "gradient-hero text-primary-foreground border-0" : ""}>
                   <Filter className="h-3 w-3 mr-1" />
-                  {f === "all" ? "전체" : f === "found" ? "찾음" : f === "lost" ? "찾는중" : "미해결"}
+                  {f === "all" ? "전체" : f === "found" ? "주웠어요" : f === "lost" ? "잃어버렸어요" : "미해결"}
                 </Button>
               ))}
             </div>
