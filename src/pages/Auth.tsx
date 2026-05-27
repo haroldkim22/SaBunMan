@@ -15,6 +15,17 @@ const Auth = () => {
     if (user) nav("/feed", { replace: true });
   }, [user, nav]);
 
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible" && loading) {
+        setLoading(false);
+        toast.error("구글 로그인 실패");
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [loading]);
+
   const handleGoogle = async () => {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
@@ -24,9 +35,9 @@ const Auth = () => {
         queryParams: { hd: "sasa.hs.kr", prompt: "select_account" },
       }
     });
-    if (error) { 
-      setLoading(false); 
-      return toast.error("구글 로그인 실패"); 
+    if (error) {
+      setLoading(false);
+      return toast.error("구글 로그인 실패");
     }
   };
 
