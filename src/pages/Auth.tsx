@@ -11,57 +11,57 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Sparkles, Mail, Lock, User as UserIcon } from "lucide-react";
 import { z } from "zod";
 
-const emailSchema = z.string().email("올바른 이메일 형식이 아닙니다").max(255);
-const pwSchema = z.string().min(8, "비밀번호는 8자 이상").max(72);
-const nameSchema = z.string().trim().min(1, "이름을 입력하세요").max(40);
+// const emailSchema = z.string().email("올바른 이메일 형식이 아닙니다").max(255);
+// const pwSchema = z.string().min(8, "비밀번호는 8자 이상").max(72);
+// const nameSchema = z.string().trim().min(1, "이름을 입력하세요").max(40);
 
-const Auth = () => {
-  const [params] = useSearchParams();
-  const nav = useNavigate();
-  const { user } = useAuth();
-  const [tab, setTab] = useState(params.get("mode") === "signup" ? "signup" : "signin");
-  const [email, setEmail] = useState("");
-  const [pw, setPw] = useState("");
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
+// const Auth = () => {
+//   const [params] = useSearchParams();
+//   const nav = useNavigate();
+//   const { user } = useAuth();
+//   const [tab, setTab] = useState(params.get("mode") === "signup" ? "signup" : "signin");
+//   const [email, setEmail] = useState("");
+//   const [pw, setPw] = useState("");
+//   const [name, setName] = useState("");
+//   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { if (user) nav("/feed", { replace: true }); }, [user, nav]);
+//   useEffect(() => { if (user) nav("/feed", { replace: true }); }, [user, nav]);
 
-  const validateSasa = (e: string) => {
-    if (!e.endsWith("@sasa.hs.kr")) {
-      toast.warning("SASA 이메일(@sasa.hs.kr) 사용을 권장합니다", { description: "다른 이메일도 사용 가능합니다." });
-    }
-  };
+//   const validateSasa = (e: string) => {
+//     if (!e.endsWith("@sasa.hs.kr")) {
+//       toast.warning("SASA 이메일(@sasa.hs.kr) 사용을 권장합니다", { description: "다른 이메일도 사용 가능합니다." });
+//     }
+//   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      emailSchema.parse(email); pwSchema.parse(pw);
-    } catch (err: any) { toast.error(err.errors?.[0]?.message ?? "입력 확인"); return; }
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
-    setLoading(false);
-    if (error) return toast.error("로그인 실패", { description: error.message });
-    toast.success("환영합니다!");
-    nav("/feed");
-  };
+//   const handleSignIn = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     try {
+//       emailSchema.parse(email); pwSchema.parse(pw);
+//     } catch (err: any) { toast.error(err.errors?.[0]?.message ?? "입력 확인"); return; }
+//     setLoading(true);
+//     const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
+//     setLoading(false);
+//     if (error) return toast.error("로그인 실패", { description: error.message });
+//     toast.success("환영합니다!");
+//     nav("/feed");
+//   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      emailSchema.parse(email); pwSchema.parse(pw); nameSchema.parse(name);
-    } catch (err: any) { toast.error(err.errors?.[0]?.message ?? "입력 확인"); return; }
-    validateSasa(email);
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email, password: pw,
-      options: { emailRedirectTo: window.location.origin, data: { display_name: name } },
-    });
-    setLoading(false);
-    if (error) return toast.error("가입 실패", { description: error.message });
-    toast.success("계정이 생성되었습니다!");
-    nav("/feed");
-  };
+//   const handleSignUp = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     try {
+//       emailSchema.parse(email); pwSchema.parse(pw); nameSchema.parse(name);
+//     } catch (err: any) { toast.error(err.errors?.[0]?.message ?? "입력 확인"); return; }
+//     validateSasa(email);
+//     setLoading(true);
+//     const { error } = await supabase.auth.signUp({
+//       email, password: pw,
+//       options: { emailRedirectTo: window.location.origin, data: { display_name: name } },
+//     });
+//     setLoading(false);
+//     if (error) return toast.error("가입 실패", { description: error.message });
+//     toast.success("계정이 생성되었습니다!");
+//     nav("/feed");
+//   };
 
   const handleGoogle = async () => {
     setLoading(true);
@@ -210,9 +210,6 @@ const Auth = () => {
             Google로 계속하기
           </Button>
 
-          <p className="text-xs text-muted-foreground text-center mt-6">
-            가입하면 <Link to="/" className="underline">서비스 약관</Link>에 동의하는 것입니다.
-          </p>
         </div>
       </div>
     </div>
