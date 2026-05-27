@@ -63,9 +63,9 @@ const Landing = () => {
             <div className="rounded-2xl border border-border bg-card shadow-elevated overflow-hidden">
               <div className="grid md:grid-cols-3 gap-0">
                 {[
-                  { tag: "찾음", color: "bg-success", title: "검정 에어팟 프로", loc: "3층 화학실 앞" },
-                  { tag: "찾음", color: "bg-success", title: "파란색 우산", loc: "1층 현관" },
-                  { tag: "찾는중", color: "bg-warning", title: "갈색 가죽 지갑", loc: "2층 어딘가" },
+                  { tag: "주웠어요", color: "bg-success", title: "검정 에어팟 프로", loc: "3층 화학실 앞" },
+                  { tag: "주웠어요", color: "bg-success", title: "파란색 우산", loc: "1층 현관" },
+                  { tag: "잃어버렸어요", color: "bg-warning", title: "갈색 가죽 지갑", loc: "2층 어딘가" },
                 ].map((c, i) => (
                   <div key={i} className="p-5 border-r border-border last:border-r-0">
                     <span className={`inline-block ${c.color} text-white text-[10px] font-bold px-2 py-0.5 rounded`}>{c.tag}</span>
