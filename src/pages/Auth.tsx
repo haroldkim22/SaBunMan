@@ -11,9 +11,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Sparkles, Mail, Lock, User as UserIcon } from "lucide-react";
 import { z } from "zod";
 
-// const emailSchema = z.string().email("올바른 이메일 형식이 아닙니다").max(255);
-// const pwSchema = z.string().min(8, "비밀번호는 8자 이상").max(72);
-// const nameSchema = z.string().trim().min(1, "이름을 입력하세요").max(40);
+const emailSchema = z.string().email("올바른 이메일 형식이 아닙니다").max(255);
+const pwSchema = z.string().min(8, "비밀번호는 8자 이상").max(72);
+const nameSchema = z.string().trim().min(1, "이름을 입력하세요").max(40);
 
 const Auth = () => {
   const [params] = useSearchParams();
@@ -27,11 +27,11 @@ const Auth = () => {
 
   useEffect(() => { if (user) nav("/feed", { replace: true }); }, [user, nav]);
 
-  // const validateSasa = (e: string) => {
-  //   if (!e.endsWith("@sasa.hs.kr")) {
-  //     toast.warning("SASA 이메일(@sasa.hs.kr) 사용을 권장합니다", { description: "다른 이메일도 사용 가능합니다." });
-  //   }
-  // };
+  const validateSasa = (e: string) => {
+    if (!e.endsWith("@sasa.hs.kr")) {
+      toast.warning("SASA 이메일(@sasa.hs.kr) 사용을 권장합니다", { description: "다른 이메일도 사용 가능합니다." });
+    }
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +115,7 @@ const Auth = () => {
             <span className="font-display font-bold text-lg">사분만</span>
           </Link>
 
+          {/*
           <h1 className="font-display text-3xl font-bold mb-2">
             {tab === "signin" ? "다시 만나서 반가워요" : "시작해볼까요"}
           </h1>
@@ -128,7 +129,7 @@ const Auth = () => {
               <TabsTrigger value="signup">회원가입</TabsTrigger>
             </TabsList>
 
-            {/* <TabsContent value="signin">
+            <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="e1">이메일</Label>
@@ -150,8 +151,8 @@ const Auth = () => {
                   로그인
                 </Button>
               </form>
-            </TabsContent> */}
-{/* 
+            </TabsContent>
+
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
@@ -183,13 +184,21 @@ const Auth = () => {
                 </Button>
               </form>
             </TabsContent>
-          </Tabs> */}
+          </Tabs>
 
-          {/* <div className="my-6 flex items-center gap-3">
+          <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
             <span className="text-xs text-muted-foreground">또는</span>
             <div className="h-px flex-1 bg-border" />
-          </div> */}
+          </div>
+          */}
+
+          <h1 className="font-display text-3xl font-bold mb-2">
+            다시 만나서 반가워요
+          </h1>
+          <p className="text-muted-foreground mb-8">
+            SASA 구글 계정으로 로그인해 주세요.
+          </p>
 
           <Button variant="outline" className="w-full" onClick={handleGoogle} disabled={loading}>
             <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
@@ -201,9 +210,9 @@ const Auth = () => {
             Google로 계속하기
           </Button>
 
-          {/* <p className="text-xs text-muted-foreground text-center mt-6">
+          <p className="text-xs text-muted-foreground text-center mt-6">
             가입하면 <Link to="/" className="underline">서비스 약관</Link>에 동의하는 것입니다.
-          </p> */}
+          </p>
         </div>
       </div>
     </div>
