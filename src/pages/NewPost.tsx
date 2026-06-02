@@ -28,6 +28,7 @@ const NewPost = () => {
   const [tagInput, setTagInput] = useState("");
   const [floor, setFloor] = useState(1);
   const [pin, setPin] = useState<{ x: number; y: number } | null>(null);
+  const [unknownLocation, setUnknownLocation] = useState(false);
   const [locationLabel, setLocationLabel] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -61,7 +62,9 @@ const NewPost = () => {
     }
     const { data, error } = await supabase.from("posts").insert({
       author_id: user.id, type, title, description: desc || null, image_url, tags,
-      floor, location_x: pin?.x ?? null, location_y: pin?.y ?? null,
+      floor: unknownLocation ? null : floor,
+      location_x: unknownLocation ? null : pin?.x ?? null,
+      location_y: unknownLocation ? null : pin?.y ?? null,
       location_label: locationLabel || null,
     }).select().single();
     setSubmitting(false);
@@ -80,7 +83,13 @@ const NewPost = () => {
           <div className="space-y-6">
             <div>
               <Label className="mb-2 block">유형</Label>
-              <Tabs value={type} onValueChange={(v) => setType(v as any)}>
+              <Tabs
+                value={type}
+                onValueChange={(v) => {
+                  setType(v as "found" | "lost");
+                  if (v === "found") setUnknownLocation(false);
+                }}
+              >
                 <TabsList className="grid grid-cols-2 w-full">
                   <TabsTrigger value="found">🔍 주웠어요</TabsTrigger>
                   <TabsTrigger value="lost">😢 잃어버렸어요</TabsTrigger>
@@ -154,19 +163,38 @@ const NewPost = () => {
           <div className="space-y-6">
             <div>
               <Label className="mb-2 block">발견 위치</Label>
+              {type === "lost" && (
+                <Tabs
+                  value={unknownLocation ? "unknown" : "map"}
+                  onValueChange={(v) => {
+                    const isUnknown = v === "unknown";
+                    setUnknownLocation(isUnknown);
+                    if (isUnknown) setPin(null);
+                  }}
+                  className="mb-3"
+                >
+                  <TabsList className="grid grid-cols-2 w-full">
+                    <TabsTrigger value="map">지도에서 선택</TabsTrigger>
+                    <TabsTrigger value="unknown">모르겠어요</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              )}
               <div className="flex gap-2 mb-3 flex-wrap">
                 {[1, 2, 3, 4, 5].map((f) => (
                   <Button key={f} type="button" size="sm"
-                    variant={floor === f ? "default" : "outline"}
-                    className={floor === f ? "gradient-hero text-primary-foreground border-0" : ""}
+                    variant={!unknownLocation && floor === f ? "default" : "outline"}
+                    className={!unknownLocation && floor === f ? "gradient-hero text-primary-foreground border-0" : ""}
+                    disabled={unknownLocation}
                     onClick={() => setFloor(f)}>
                     {f}F
                   </Button>
                 ))}
               </div>
-              <FloorMap floor={floor} selected={pin} onClick={(x, y) => setPin({ x, y })} />
+              <div className={unknownLocation ? "pointer-events-none opacity-40 transition-opacity" : "transition-opacity"}>
+                <FloorMap floor={floor} selected={pin} onClick={unknownLocation ? undefined : (x, y) => setPin({ x, y })} />
+              </div>
               <p className="text-xs text-muted-foreground mt-2">
-                지도를 클릭해 위치를 표시하세요. {pin && <span className="text-primary font-medium">✓ 선택됨</span>}
+                {unknownLocation ? "위치를 모르는 상태로 등록됩니다." : "지도를 클릭해 위치를 표시하세요."} {pin && <span className="text-primary font-medium">✓ 선택됨</span>}
               </p>
             </div>
 
