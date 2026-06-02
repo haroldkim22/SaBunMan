@@ -72,7 +72,7 @@ const Feed = () => {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
               <h1 className="font-display text-3xl md:text-4xl font-bold">분실물 피드</h1>
-              <p className="text-muted-foreground mt-1">최신 등록순 · 총 {posts.length}건</p>
+              <p className="text-muted-foreground mt-1">최신 등록순 / 총 {posts.length}건</p>
             </div>
             <Button asChild className="gradient-hero text-primary-foreground border-0 shadow-soft">
               <Link to="/new"><Plus className="h-4 w-4 mr-1" />새 게시물</Link>
