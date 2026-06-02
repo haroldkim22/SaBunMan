@@ -85,7 +85,7 @@ const PostDetail = () => {
     if (!post) return;
     const newStatus = post.status === "open" ? "resolved" : "open";
     const { error } = await supabase.from("posts").update({ status: newStatus }).eq("id", post.id);
-    if (error) return toast.error(”처리 실패 :” + error.message);
+    if (error) return toast.error("처리 실패 :" + error.message);
     toast.success(newStatus === "resolved" ? "해결 처리되었습니다" : "다시 미해결로");
     load();
   };
@@ -93,7 +93,7 @@ const PostDetail = () => {
   const deletePost = async () => {
     if (!post || !confirm("정말 삭제하시겠어요?")) return;
     const { error } = await supabase.from("posts").delete().eq("id", post.id);
-    if (error) return toast.error(”처리 실패 :” + error.message);
+    if (error) return toast.error("처리 실패 :" + error.message);
     toast.success("삭제되었습니다");
     nav("/feed");
   };
