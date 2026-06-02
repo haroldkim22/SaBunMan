@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FloorMap } from "@/components/FloorMap";
 import { toast } from "sonner";
-import { ArrowLeft, MapPin, Hash, Trash2, CheckCircle2, ImageOff, Send } from "lucide-react";
+import { ArrowLeft, MapPin, Hash, Trash2, CheckCircle2, ImageOff, Send, Pencil } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 
@@ -167,6 +167,9 @@ const PostDetail = () => {
                   className={post.status === "open" ? "gradient-hero text-primary-foreground border-0 flex-1" : "flex-1"}>
                   <CheckCircle2 className="h-4 w-4 mr-1" />
                   {post.status === "open" ? "해결 완료" : "다시 열기"}
+                </Button>
+                <Button variant="outline" onClick={() => nav(`/post/${post.id}/edit`)}>
+                  <Pencil className="h-4 w-4" />
                 </Button>
                 <Button variant="outline" onClick={deletePost} className="text-destructive">
                   <Trash2 className="h-4 w-4" />
