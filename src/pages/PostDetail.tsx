@@ -20,8 +20,10 @@ type Post = {
   status: "open" | "resolved"; created_at: string; author_id: string;
   profiles?: { display_name: string; avatar_url: string | null } | null;
 };
-type Comment = { id: string; content: string; created_at: string; author_id: string;
-  profiles?: { display_name: string; avatar_url: string | null } | null; };
+type Comment = {
+  id: string; content: string; created_at: string; author_id: string;
+  profiles?: { display_name: string; avatar_url: string | null } | null;
+};
 
 const typeLabel = { found: "주웠어요", lost: "잃어버렸어요" } as const;
 const typeStyle = { found: "bg-success text-success-foreground", lost: "bg-warning text-warning-foreground" } as const;
@@ -38,11 +40,6 @@ const PostDetail = () => {
 
   const load = async () => {
     if (!id) return;
-    const [{ data: p }, { data: cs }] = await Promise.all([
-      supabase.from("posts").select("*").eq("id", id).maybeSingle(),
-      supabase.from("comments").select("*").eq("post_id", id).order("created_at"),
-    ]);
-
     // profiles는 FK가 없어 별도 조회
     const userIds = Array.from(new Set([
       ...(p ? [p.author_id] : []),
@@ -77,7 +74,7 @@ const PostDetail = () => {
     if (!post) return;
     const newStatus = post.status === "open" ? "resolved" : "open";
     const { error } = await supabase.from("posts").update({ status: newStatus }).eq("id", post.id);
-    if (error) return toast.error("처리 실패");
+    if (error) return toast.error("처리 실패 " + error.message);
     toast.success(newStatus === "resolved" ? "해결 처리되었습니다" : "다시 미해결로");
     load();
   };
@@ -85,7 +82,7 @@ const PostDetail = () => {
   const deletePost = async () => {
     if (!post || !confirm("정말 삭제하시겠어요?")) return;
     const { error } = await supabase.from("posts").delete().eq("id", post.id);
-    if (error) return toast.error("삭제 실패");
+    if (error) return toast.error("삭제 실패 " + error.message);
     toast.success("삭제되었습니다");
     nav("/feed");
   };
