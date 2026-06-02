@@ -40,6 +40,11 @@ const PostDetail = () => {
 
   const load = async () => {
     if (!id) return;
+    const [{ data: p }, { data: cs }] = await Promise.all([
+      supabase.from("posts").select("*").eq("id", id).maybeSingle(),
+      supabase.from("comments").select("*").eq("post_id", id).order("created_at"),
+    ]);
+
     // profiles는 FK가 없어 별도 조회
     const userIds = Array.from(new Set([
       ...(p ? [p.author_id] : []),
