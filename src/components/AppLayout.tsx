@@ -17,8 +17,9 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
         2026 SaBunMan | 김동연 · 정영한 · 하정민
       </footer>
 
-      {/*폰 전용 하단 고정 네비게이션 바*/}
+      {/* 폰 하단 네비게이션 바 */}
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/95 backdrop-blur-lg border-t border-border/80 flex items-center justify-around z-50 md:hidden shadow-[0_-2px_10px_rgba(0,0,0,0.05)] px-2">
+        {/* 1. 피드 탭 */}
         <NavLink 
           to="/feed" 
           className={({ isActive }) => `${mobileLink} ${isActive ? mobileActive : ""}`}
@@ -27,17 +28,16 @@ export const AppLayout = ({ children }: { children: ReactNode }) => {
           <span className="text-[11px] tracking-tight">피드</span>
         </NavLink>
 
+        {/* 2. 글쓰기 탭 */}
         <NavLink 
           to="/new" 
           className={({ isActive }) => `${mobileLink} ${isActive ? mobileActive : ""}`}
         >
-          {/* 중앙 등록 버튼은 조금 더 크게 배치 -> 굳이?????*/} 
-          <div className="gradient-hero text-primary-foreground p-2 rounded-xl -mt-4 shadow-md border-0">
-            <PlusCircle className="h-5 w-5" />
-          </div>
-          <span className="text-[11px] tracking-tight mt-1">글쓰기</span>
+          <PlusCircle className="h-5 w-5 mb-0.5" />
+          <span className="text-[11px] tracking-tight">글쓰기</span>
         </NavLink>
 
+        {/* 3. 지도 탭 */}
         <NavLink 
           to="/map" 
           className={({ isActive }) => `${mobileLink} ${isActive ? mobileActive : ""}`}
