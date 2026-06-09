@@ -103,7 +103,7 @@ export const FloorMap = ({
   }
 
   return (
-    <div className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}>
+    <div className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`} style={{ maxWidth: "100vw", maxHeight: "calc(100vh - 2rem)" }}>
       <TransformWrapper
         initialScale={1}
         minScale={1}
