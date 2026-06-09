@@ -76,7 +76,7 @@ export const FloorMap = ({
             <circle cx={m.x * VB_W} cy={m.y * VB_H} r="11"
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
               stroke="white" strokeWidth="3">
-              <animate attributeName="r" values="11;15;11" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="r" values="11;15;11" dur="0.5" repeatCount="indefinite" />
             </circle>
             <title>{m.title}</title>
           </g>
