@@ -36,7 +36,7 @@ const Map = () => {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
           <div>
             <h1 className="font-display text-3xl md:text-4xl font-bold">학교 지도</h1>
-            <p className="text-muted-foreground mt-1">미해결 분실물 위치</p>
+            <p className="text-muted-foreground mt-1">미해결 분실물 위치를 한눈에 · 마커를 클릭하세요</p>
           </div>
           <div className="flex gap-2 flex-wrap">
             {(["all", "found", "lost"] as const).map((f) => (
