@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Search, MapPin, Plus, Filter, ImageOff } from "lucide-react";
+import { Search, MapPin, Hash, Plus, Filter, ImageOff } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -67,16 +67,8 @@ const Feed = () => {
 
   return (
     <AppLayout>
-      {/* 전역 스크롤바 숨김 전용 전역 스타일링 헤드 */}
-      <style>{`
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
-
       <section className="border-b border-border/60 bg-gradient-to-b from-muted/40 to-transparent">
         <div className="container py-6 md:py-8 px-4 md:px-8">
-          
-          {/* 타이틀 및 새 게시물 버튼 */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-4">
             <div>
               <h1 className="font-display text-2xl md:text-4xl font-bold">분실물 피드</h1>
@@ -87,21 +79,18 @@ const Feed = () => {
             </Button>
           </div>
 
-          {/* 💡 원상복구 및 최적화 핵심 영역: PC 버전은 md:flex-row 가로 정렬로 완전 원상복구! */}
-          <div className="mt-4 md:mt-6 flex flex-col md:flex-row gap-2.5 md:gap-3">
+          <div className="mt-4 md:mt-6 flex flex-col md:flex-row gap-2 md:gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input value={q} onChange={(e) => setQ(e.target.value)}
                 placeholder="제목, 설명, 해시태그, 위치 검색..."
                 className="pl-9 h-10 md:h-11 bg-card text-sm" />
             </div>
-
-            {/* 모바일에서는 깔끔하게 가로 터치 드래그가 작동하되 지저분한 하단 바만 은닉 */}
-            <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0 no-scrollbar snap-x touch-pan-x">
+            <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none snap-x">
               {(["all", "found", "lost", "open"] as const).map((f) => (
                 <Button key={f} variant={filter === f ? "default" : "outline"}
                   size="sm" onClick={() => setFilter(f)}
-                  className={`text-xs md:text-sm h-8 md:h-9 px-3.5 whitespace-nowrap snap-start shrink-0 ${filter === f ? "gradient-hero text-primary-foreground border-0" : ""}`}>
+                  className={`text-xs md:text-sm h-8 md:h-9 px-3 whitespace-nowrap snap-start ${filter === f ? "gradient-hero text-primary-foreground border-0" : ""}`}>
                   <Filter className="h-3 w-3 mr-1 shrink-0" />
                   {f === "all" ? "전체" : f === "found" ? "주웠어요" : f === "lost" ? "잃어버렸어요" : "미해결"}
                 </Button>
@@ -109,37 +98,39 @@ const Feed = () => {
             </div>
           </div>
 
-          {/* 추천 태그 스크롤바 제어 */}
           {trendingTags.length > 0 && (
-            <div className="mt-3.5 flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 no-scrollbar whitespace-nowrap touch-pan-x">
-              <span className="text-[11px] md:text-xs font-medium text-muted-foreground shrink-0 mr-1">추천 태그</span>
+            <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none whitespace-nowrap">
+              <span className="text-[11px] md:text-xs font-medium text-muted-foreground shrink-0">추천 태그</span>
               {trendingTags.map((t) => (
                 <button key={t} onClick={() => setQ(t)}
-                  className="text-[11px] md:text-xs px-2.5 py-0.5 md:py-1 rounded-full bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors shrink-0">
+                  className="text-[11px] md:text-xs px-2.5 py-0.5 md:py-1 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors shrink-0">
                   #{t}
                 </button>
               ))}
             </div>
           )}
-
         </div>
       </section>
 
-      {/* 메인 피드 리스트 그리드 카드 섹션 */}
       <section className="container py-6 md:py-8 px-4 md:px-8">
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          /* 모바일 로딩바도 2열 */
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="aspect-[4/5] rounded-2xl bg-muted animate-pulse" />
+              <div key={i} className="aspect-[4/5] sm:h-72 rounded-2xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-4xl md:text-5xl mb-3">🔍</div>
             <h3 className="font-display text-lg md:text-xl font-bold">아직 게시물이 없어요</h3>
-            <p className="text-xs md:text-sm text-muted-foreground mt-1 mb-6">검색 조건을 바꿔보세요.</p>
+            <p className="text-xs md:text-sm text-muted-foreground mt-1 mb-6">
+              {posts.length === 0 ? "첫 분실물을 등록해보세요." : "검색 조건을 바꿔보세요."}
+            </p>
+            <Button asChild size="sm" className="md:size-default"><Link to="/new">새 게시물 등록</Link></Button>
           </div>
         ) : (
+          /* 모바일 격자 2열, 간격 gap-3 설정 */
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
             {filtered.map((p, i) => (
               <motion.div key={p.id}
@@ -190,6 +181,7 @@ const Feed = () => {
                           </span>
                         </div>
 
+                        {/* 해시태그 영역 줄이기 */}
                         {p.tags.length > 0 && (
                           <div className="mt-1.5 md:mt-3 flex gap-0.5 md:gap-1 flex-wrap">
                             {p.tags.slice(0, 2).map((t) => (
