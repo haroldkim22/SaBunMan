@@ -107,11 +107,11 @@ export const FloorMap = ({
       <TransformWrapper
         initialScale={1}
         minScale={1}
-        maxScale={5}
+        maxScale={7}
         wheel={{ step: 0.01, smooth: true }}
         doubleClick={{ disabled: true }}
         panning={{ disabled: false, velocityDisabled: true }}
-        animationDuration={120}
+        animationDuration={30}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
