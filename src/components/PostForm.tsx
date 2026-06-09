@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, useRef, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -177,41 +177,47 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
 
         <div>
           <Label>사진</Label>
-          <label className="mt-2 block cursor-pointer">
-            <input
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
-            />
-            {currentImage ? (
-              <div className="relative rounded-xl overflow-hidden border border-border">
-                <img src={currentImage} alt="preview" className="w-full aspect-video object-cover" />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="absolute top-2 right-2"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleFile(null);
-                  }}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary hover:bg-muted/50 transition-colors">
-                <div className="grid place-items-center">
-                  <div className="grid h-12 w-12 place-items-center rounded-full bg-primary/10 text-primary mb-3">
-                    <Camera className="h-5 w-5" />
-                  </div>
-                  <div className="font-medium">사진을 촬영하거나 선택</div>
-                  <div className="text-xs text-muted-foreground mt-1">선택사항</div>
-                </div>
-              </div>
-            )}
-          </label>
+          <div className="mt-2 flex gap-2">
+            <Button type="button" variant="outline" onClick={() => cameraInputRef.current?.click()}>
+              <Camera className="mr-2 h-4 w-4" /> 카메라 촬영
+            </Button>
+            <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <Upload className="mr-2 h-4 w-4" /> 갤러리 선택
+            </Button>
+          </div>
+          {/* Hidden inputs */}
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="sr-only"
+            onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+          />
+          {currentImage ? (
+            <div className="relative rounded-xl overflow-hidden border border-border mt-4">
+              <img src={currentImage} alt="preview" className="w-full aspect-video object-cover" />
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="absolute top-2 right-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleFile(null);
+                }}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : null}
         </div>
       </div>
 
