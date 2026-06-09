@@ -51,13 +51,20 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
+  // Refs for hidden file inputs
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     return () => {
       if (preview) URL.revokeObjectURL(preview);
     };
   }, [preview]);
 
-  const addTag = () => {
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+const fileInputRef = useRef<HTMLInputElement>(null);
+
+const addTag = () => {
     const t = tagInput.trim().replace(/^#/, "");
     if (t && !tags.includes(t) && tags.length < 8) setTags([...tags, t]);
     setTagInput("");
@@ -179,10 +186,10 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
           <Label>사진</Label>
           <div className="mt-2 flex gap-2">
             <Button type="button" variant="outline" onClick={() => cameraInputRef.current?.click()}>
-              <Camera className="mr-2 h-4 w-4" /> 카메라 촬영
+              <Camera className="mr-2 h-4 w-4" /> 카메라
             </Button>
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-              <Upload className="mr-2 h-4 w-4" /> 갤러리 선택
+              <Upload className="mr-2 h-4 w-4" /> 갤러리
             </Button>
           </div>
           {/* Hidden inputs */}
