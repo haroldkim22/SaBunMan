@@ -44,6 +44,7 @@ const Profile = () => {
 
   return (
     <AppLayout>
+      {/*전체적으로 모바일 패딩 바꾸기*/}
       <div className="container py-6 px-4 md:py-8 max-w-3xl">
         
         <div className="rounded-2xl md:rounded-3xl gradient-hero p-5 md:p-8 text-primary-foreground shadow-elevated relative overflow-hidden">
@@ -52,6 +53,7 @@ const Profile = () => {
             backgroundSize: "30px 30px",
           }} />
           
+          {/*모바일에서는 세로 중앙 정렬 */}
           <div className="relative flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 md:gap-5">
             <Avatar className="h-16 w-16 md:h-20 md:w-20 border-4 border-white/20 shrink-0 shadow-soft">
               <AvatarImage src={profile.avatar_url ?? undefined} />
@@ -61,15 +63,15 @@ const Profile = () => {
             <div className="flex-1 min-w-0 w-full">
               <h1 className="font-display text-xl md:text-3xl font-bold truncate">{profile.display_name}</h1>
               <p className="text-primary-foreground/70 text-xs md:text-sm truncate mt-0.5">{profile.email}</p>
-              
               {profile.bio && !editing && (
-                <p className="mt-3.5 text-slate-900 font-medium text-xs md:text-sm break-all leading-relaxed bg-white/90 backdrop-blur-sm px-3.5 py-2.5 rounded-xl inline-block text-left w-full sm:w-auto shadow-sm">
+                <p className="mt-3 text-primary-foreground/90 text-xs md:text-sm break-all leading-relaxed bg-white/10 px-3 py-2 rounded-xl inline-block text-left w-full sm:w-auto">
                   {profile.bio}
                 </p>
               )}
             </div>
 
             {!editing && (
+              /* 모바일에서는 하단에 꽉 차게 배치*/
               <Button variant="secondary" size="sm" onClick={() => setEditing(true)} 
                 className="w-full sm:w-auto shrink-0 mt-2 sm:mt-0 h-8 text-xs justify-center bg-white/20 hover:bg-white/30 text-white border-0">
                 <Pencil className="h-3 w-3 mr-1" />프로필 편집
