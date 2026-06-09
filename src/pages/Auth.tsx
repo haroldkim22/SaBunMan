@@ -43,35 +43,35 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      {/* 💡 핵심 수정: bg-black/50 오버레이 레이어를 결합하여 왼쪽 테마 색상의 진함을 50% 수준으로 차분하게 낮춤 */}
-      <div className="hidden lg:flex relative gradient-hero p-12 flex-col justify-between text-primary-foreground overflow-hidden">
-        <div className="absolute inset-0 bg-black/50 z-0" /> {/* 투명도 조절용 레이어 */}
+      <div className="hidden lg:flex relative p-12 flex-col justify-between overflow-hidden bg-background">
         
-        <div className="absolute inset-0 opacity-10 z-0" style={{
+        <div className="absolute inset-0 bg-gradient-to-br from-primary to-purple-600 opacity-50" />
+        
+        <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: "radial-gradient(circle at 20% 30%, white 1px, transparent 1px)",
           backgroundSize: "30px 30px",
         }} />
         
-        {/* 내부 요소들이 묻히지 않도록 relative z-10 적용 */}
         <Link to="/" className="relative z-10 flex items-center gap-2">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 backdrop-blur">
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/20 text-primary backdrop-blur">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <div className="font-display font-bold text-xl leading-none">사 분 만</div>
-            <div className="text-[10px] tracking-wider opacity-70">SASA LOST & FOUND</div>
+            <div className="font-display font-bold text-xl leading-none text-foreground">사 분 만</div>
+            <div className="text-[10px] tracking-wider font-semibold text-primary/80 mt-0.5">SASA LOST & FOUND</div>
           </div>
         </Link>
         
         <div className="relative z-10">
-          <h2 className="font-display text-4xl font-bold leading-tight mb-3">
+          <h2 className="font-display text-4xl font-bold leading-tight mb-4 text-slate-800">
             잃어버린 물건이<br />4분만에 돌아오는
           </h2>
-          <p className="text-primary-foreground/70">
+          <p className="text-slate-600 font-medium leading-relaxed">
             사진, 위치, 해시태그로<br />분실물을 등록하고 찾을 수 있습니다
           </p>
         </div>
-        <div className="relative z-10 text-xs opacity-60">2026 정보과학프로젝트</div>
+        
+        <div className="relative z-10 text-xs font-medium text-slate-500">2026 정보과학프로젝트</div>
       </div>
 
       <div className="flex items-center justify-center p-6 md:p-12 bg-background">
