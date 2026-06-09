@@ -116,6 +116,7 @@ export const FloorMap = ({
   }
 
   return (
+<<<<<<< HEAD
     <div
       className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
       style={{ width: "100%", height: "100%" }}
@@ -153,6 +154,21 @@ export const FloorMap = ({
                 className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
                 onClick={(e) => { e.stopPropagation(); resetTransform(); }}>
                 <Maximize2 className="h-4 w-4" />
+=======
+    <AppLayout>
+      <div className="container py-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="font-display text-3xl md:text-4xl font-bold">학교 지도</h1>
+            <p className="text-muted-foreground mt-1">미해결 분실물 위치</p>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {(["all", "found", "lost"] as const).map((f) => (
+              <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
+                className={filter === f ? "gradient-hero text-primary-foreground border-0" : ""}
+                onClick={() => setFilter(f)}>
+                {f === "all" ? "전체" : f === "found" ? "주웠어요" : "잃어버렸어요"}
+>>>>>>> parent of fabf9f2 (Revert "Update Map.tsx")
               </Button>
             </div>
           </>

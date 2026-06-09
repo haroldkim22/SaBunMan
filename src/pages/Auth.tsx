@@ -62,7 +62,7 @@ const Auth = () => {
             잃어버린 물건이<br />4분만에 돌아오는
           </h2>
           <p className="text-primary-foreground/70">
-            사진, 위치, 해시태그로 누구나 쉽게<br />분실물을 등록하고 찾을 수 있습니다
+            사진, 위치, 해시태그로<br />분실물을 등록하고 찾을 수 있습니다
           </p>
         </div>
         <div className="relative text-xs opacity-60">2026 정보과학프로젝트</div>
@@ -78,7 +78,7 @@ const Auth = () => {
           </Link>
 
           <h1 className="font-display text-3xl font-bold mb-2">
-            다시 만나서 반가워요
+            안녕하세요
           </h1>
           <p className="text-muted-foreground mb-8">
             SASA 구글 계정으로 로그인해 주세요
