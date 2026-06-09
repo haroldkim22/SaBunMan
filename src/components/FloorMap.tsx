@@ -124,7 +124,7 @@ export const FloorMap = ({
         initialScale={1}
         minScale={1}
         maxScale={7}
-        wheel={{ step: 0.05, smooth: true }}
+        wheel={{ step: 0.01, smooth: true }}
         doubleClick={{ disabled: true }}
         panning={{ disabled: false, velocityDisabled: true }}
         onTransformed={(instance: any) => setScale(instance.state.scale)}
