@@ -1,21 +1,7 @@
 # SaBunMan
 
-## Development
+2026 정보과학프로젝트 I
 
-Install dependencies with npm:
-
-```sh
-npm install
-```
-
-Run the local development server:
-
-```sh
-npm run dev
-```
-
-Build for production:
-
-```sh
-npm run build
-```
+김동연
+정영한
+하정민
