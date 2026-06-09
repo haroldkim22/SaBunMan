@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FloorMap } from "@/components/FloorMap";
 import { toast } from "sonner";
-import { ArrowLeft, MapPin, Trash2, CheckCircle2, ImageOff, Send } from "lucide-react";
+import { ArrowLeft, MapPin, Hash, Trash2, CheckCircle2, ImageOff, Send, Pencil } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 
@@ -29,206 +29,225 @@ const typeLabel = { found: "주웠어요", lost: "잃어버렸어요" } as const
 const typeStyle = { found: "bg-success text-success-foreground", lost: "bg-warning text-warning-foreground" } as const;
 
 const PostDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
   const { user } = useAuth();
   const nav = useNavigate();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
+  const [comment, setComment] = useState("");
+  const [posting, setPosting] = useState(false);
 
-  const fetchPost = async () => {
+  const load = async () => {
     if (!id) return;
-    const { data: p } = await supabase.from("posts").select("*").eq("id", id).maybeSingle();
-    if (!p) { setPost(null); setLoading(false); return; }
-    
-    const { data: prof } = await supabase.from("profiles").select("display_name, avatar_url").eq("id", p.author_id).maybeSingle();
-    const { data: comms } = await supabase.from("comments").select("*").eq("post_id", id).order("created_at", { ascending: true });
-    
-    const cIds = Array.from(new Set((comms ?? []).map((c) => c.author_id)));
-    const cProfMap: Record<string, any> = {};
-    if (cIds.length) {
-      const { data: cProfs } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", cIds);
-      (cProfs ?? []).forEach((pr) => { cProfMap[pr.id] = pr; });
-    }
+    try {
+      const [{ data: p }, { data: cs }] = await Promise.all([
+        supabase.from("posts").select("*").eq("id", id).maybeSingle(),
+        supabase.from("comments").select("*").eq("post_id", id).order("created_at"),
+      ]);
 
-    setPost({ ...p, profiles: prof } as any);
-    setComments((comms ?? []).map((c) => ({ ...c, profiles: cProfMap[c.author_id] ?? null })) as any);
-    setLoading(false);
+      const userIds = Array.from(new Set([
+        ...(p ? [p.author_id] : []),
+        ...((cs ?? []).map((c: any) => c.author_id)),
+      ]));
+      const profileMap: Record<string, any> = {};
+      if (userIds.length) {
+        const { data: profs } = await supabase
+          .from("profiles").select("id, display_name, avatar_url").in("id", userIds);
+        (profs ?? []).forEach((pr: any) => { profileMap[pr.id] = pr; });
+      }
+
+      setPost(p ? ({ ...p, profiles: profileMap[(p as any).author_id] ?? null } as any) : null);
+      setComments(((cs ?? []) as any[]).map((c) => ({ ...c, profiles: profileMap[c.author_id] ?? null })) as any);
+    } catch (e: any) {
+      toast.error("데이터를 불러오지 못했어요: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchPost(); }, [id]);
+  useEffect(() => { load(); }, [id]);
 
-  const toggleStatus = async () => {
+  const addComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comment.trim() || !user || !id) return;
+    setPosting(true);
+    const { error } = await supabase.from("comments").insert({ post_id: id, author_id: user.id, content: comment.trim() });
+    setPosting(false);
+    if (error) return toast.error("댓글 실패");
+    setComment("");
+    load();
+  };
+
+  const toggleResolved = async () => {
     if (!post) return;
-    const next = post.status === "open" ? "resolved" : "open";
-    const { error } = await supabase.from("posts").update({ status: next }).eq("id", post.id);
-    if (error) return toast.error("상태 변경 실패");
-    toast.success(next === "resolved" ? "해결 완료 처리되었습니다" : "다시 미해결 상태로 변경되었습니다");
-    fetchPost();
+    const newStatus = post.status === "open" ? "resolved" : "open";
+    const { error } = await supabase.from("posts").update({ status: newStatus }).eq("id", post.id);
+    if (error) return toast.error("처리 실패 :" + error.message);
+    toast.success(newStatus === "resolved" ? "해결 처리되었습니다" : "다시 미해결로");
+    load();
   };
 
   const deletePost = async () => {
-    if (!post || !window.confirm("정말 이 게시물을 삭제하시겠습니까?")) return;
+    if (!post || !confirm("정말 삭제하시겠어요?")) return;
     const { error } = await supabase.from("posts").delete().eq("id", post.id);
-    if (error) return toast.error("삭제 실패");
-    toast.success("게시물이 삭제되었습니다");
+    if (error) return toast.error("처리 실패 :" + error.message);
+    toast.success("삭제되었습니다");
     nav("/feed");
   };
 
-  const writeComment = async () => {
-    if (!user || !newComment.trim() || !id) return;
-    const { error } = await supabase.from("comments").insert({ post_id: id, author_id: user.id, content: newComment.trim() });
-    if (error) return toast.error("댓글 등록 실패");
-    setNewComment("");
-    fetchPost();
-  };
+  if (loading) return <AppLayout><div className="container py-20 text-center text-muted-foreground">불러오는 중...</div></AppLayout>;
+  if (!post) return <AppLayout><div className="container py-20 text-center">게시물을 찾을 수 없습니다.</div></AppLayout>;
 
-  if (loading) return <AppLayout><div className="container py-20 text-center text-sm">불러오는 중...</div></AppLayout>;
-  if (!post) return <AppLayout><div className="container py-20 text-center text-sm">존재하지 않는 게시물입니다.</div></AppLayout>;
-
-  const ini = (post.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
   const isOwner = user?.id === post.author_id;
+  const initials = (post.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
 
   return (
     <AppLayout>
-
-      <div className="container py-5 px-4 md:py-10 max-w-4xl">
-        <Button variant="ghost" size="sm" onClick={() => nav(-nav ? "/feed" : -1 as any)} className="mb-5 -ml-2 text-muted-foreground text-xs h-8">
-          <ArrowLeft className="h-3.5 w-3.5 mr-1" /> 목록으로
+      {/* 모바일 4, PC 8 패딩 최적화 배분 */}
+      <div className="container py-6 md:py-8 px-4 md:px-8 max-w-4xl">
+        <Button variant="ghost" asChild className="mb-4 -ml-3 h-9 text-xs md:text-sm text-muted-foreground">
+          <Link to="/feed"><ArrowLeft className="h-4 w-4 mr-1" />피드로</Link>
         </Button>
 
-        <div className="grid lg:grid-cols-[1fr_340px] gap-6 md:gap-8 items-start">
-          <div className="space-y-6 md:space-y-8">
-            
-            <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-soft shrink-0">
-              <div className="aspect-[16/10] bg-muted relative">
-                {post.image_url ? (
-                  <img src={post.image_url} alt={post.title} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full grid place-items-center text-muted-foreground bg-muted/40">
-                    <ImageOff className="h-10 w-10 opacity-40" />
-                  </div>
-                )}
-                <div className="absolute top-3 left-3 flex gap-1.5">
-                  <Badge className={`${typeStyle[post.type]} border-0 font-bold text-[10px] md:text-xs px-2 py-0.5`}>
-                    {typeLabel[post.type]}
-                  </Badge>
-                  <Badge variant={post.status === "resolved" ? "secondary" : "default"} className="text-[10px] md:text-xs px-2 py-0.5">
-                    {post.status === "resolved" ? "해결완료" : "해결중"}
-                  </Badge>
-                </div>
-              </div>
-
-              {/*텍스트 밀도*/}
-              <div className="p-4 md:p-6 space-y-4">
-                <div className="space-y-1.5">
-                  <h1 className="font-display text-lg md:text-2xl font-bold tracking-tight text-foreground leading-snug">
-                    {post.title}
-                  </h1>
-                  <div className="flex items-center gap-2 text-[11px] md:text-xs text-muted-foreground">
-                    <span className="font-medium text-foreground">{post.profiles?.display_name ?? "사용자"}</span>
-                    <span>•</span>
-                    <span>{formatDistanceToNow(new Date(post.created_at), { locale: ko })} 전</span>
-                  </div>
-                </div>
-
-                <div className="border-t border-border/60 pt-4">
-                  <p className="text-xs md:text-base text-slate-700 leading-relaxed whitespace-pre-wrap min-h-[60px]">
-                    {post.description ?? "상세 설명이 등록되지 않은 게시물입니다."}
-                  </p>
-                </div>
-
-                {post.tags.length > 0 && (
-                  <div className="flex gap-1 flex-wrap pt-2">
-                    {post.tags.map((t) => (
-                      <span key={t} className="text-[10px] md:text-xs px-2.5 py-0.5 rounded-full bg-muted font-medium text-muted-foreground">
-                        #{t}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/*댓글창 간격 조정*/}
-            <section className="bg-card rounded-2xl border border-border p-4 md:p-6 shadow-soft space-y-4">
-              <h2 className="font-display text-sm md:text-lg font-bold text-foreground">댓글 {comments.length}개</h2>
-              
-              {user ? (
-                <div className="flex gap-2 items-start bg-muted/30 p-2 rounded-xl border border-border/40">
-                  <Textarea value={newComment} onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="정보를 알고 계시다면 댓글을 남겨주세요..."
-                    className="min-h-[44px] h-11 text-xs md:text-sm resize-none bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 py-2.5 px-2" />
-                  <Button size="icon" variant="ghost" onClick={writeComment} className="h-9 w-9 shrink-0 text-primary hover:bg-primary/10">
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
+        {/* 💡 PC 레이아웃 원상복구 (md:grid-cols-2 분할형 기조 회복) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          
+          {/* 좌측: 이미지 영역 (모바일에서는 화면 비율에 맞게 자연스럽게 흐름 유지) */}
+          <div>
+            <div className="aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-muted relative shadow-soft border border-border/40">
+              {post.image_url ? (
+                <img src={post.image_url} alt={post.title} className="w-full h-full object-cover" />
               ) : (
-                <div className="text-center py-4 bg-muted/40 rounded-xl text-[11px] md:text-xs text-muted-foreground">
-                  댓글을 작성하려면 <Link to="/auth" className="text-primary underline font-semibold">로그인</Link>이 필요합니다.
+                <div className="h-full grid place-items-center text-muted-foreground bg-muted/30">
+                  <ImageOff className="h-10 w-10 md:h-12 md:w-12 opacity-60" />
                 </div>
               )}
-
-              <div className="space-y-3 pt-1">
-                {comments.length === 0 && (
-                  <p className="text-xs text-muted-foreground text-center py-6">첫 댓글을 남겨보세요.</p>
+              <div className="absolute top-3 left-3 md:top-4 md:left-4 flex gap-1.5">
+                <Badge className={`${typeStyle[post.type]} border-0 font-bold text-[10px] md:text-xs px-2.5 py-0.5`}>
+                  {typeLabel[post.type]}
+                </Badge>
+                {post.status === "resolved" && (
+                  <Badge variant="secondary" className="bg-background/90 backdrop-blur text-[10px] md:text-xs px-2 py-0.5">해결완료</Badge>
                 )}
-                {comments.map((c) => {
-                  const cIni = (c.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
-                  return (
-                    <div key={c.id} className="flex gap-2.5 rounded-xl border border-border/50 bg-muted/10 p-3 items-start">
-                      <Avatar className="h-7 w-7 md:h-8 md:w-8 shrink-0">
-                        <AvatarImage src={c.profiles?.avatar_url ?? undefined} />
-                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{cIni}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-xs md:text-sm text-foreground">{c.profiles?.display_name ?? "사용자"}</span>
-                          <span className="text-[10px] text-muted-foreground opacity-80">{formatDistanceToNow(new Date(c.created_at), { locale: ko })} 전</span>
-                        </div>
-                        <p className="text-xs md:text-sm text-slate-700 mt-1 whitespace-pre-wrap leading-normal">{c.content}</p>
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
-            </section>
+            </div>
           </div>
 
-          {/* 사이드 위치 섹션 */}
-          <div className="space-y-4 w-full lg:sticky lg:top-20">
-            <div className="bg-card rounded-2xl border border-border p-4 shadow-soft space-y-3.5">
-              <div className="flex items-center gap-1.5 text-xs md:text-sm font-semibold text-foreground">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>위치 정보</span>
-              </div>
-              
-              <div className="aspect-square bg-muted rounded-xl relative overflow-hidden border border-border/60">
-                {post.floor && post.location_x ? (
-                  <FloorMap floor={post.floor} markers={[{ id: post.id, x: post.location_x, y: post.location_y ?? 0, type: post.type, title: post.title, floor: post.floor }]} />
-                ) : (
-                  <div className="absolute inset-0 grid place-items-center text-[11px] md:text-xs text-muted-foreground bg-muted/40">위치 마커가 지정되지 않았습니다.</div>
-                )}
-              </div>
-              <div className="text-center text-xs font-medium text-slate-700 bg-muted/50 py-2 rounded-lg">
-                {post.floor ? `${post.floor}층` : ""} {post.location_label ?? "상세 위치 미지정"}
+          {/* 우측: 디테일 정보 텍스트 설명 영역 */}
+          <div className="space-y-4 md:space-y-5">
+            <div>
+              <h1 className="font-display text-xl md:text-3xl font-bold leading-tight tracking-tight text-foreground">
+                {post.title}
+              </h1>
+              <div className="flex items-center gap-2 mt-2.5">
+                <Avatar className="h-6 w-6 md:h-7 md:w-7 border border-border/40">
+                  <AvatarImage src={post.profiles?.avatar_url ?? undefined} />
+                  <AvatarFallback className="text-[10px] md:text-xs bg-primary text-primary-foreground font-bold">{initials}</AvatarFallback>
+                </Avatar>
+                <span className="text-xs md:text-sm font-medium text-foreground">{post.profiles?.display_name ?? "사용자"}</span>
+                <span className="text-[11px] md:text-xs text-muted-foreground">
+                  · {formatDistanceToNow(new Date(post.created_at), { locale: ko, addSuffix: true })}
+                </span>
               </div>
             </div>
 
+            {post.description && (
+              <p className="text-sm md:text-base text-foreground/90 whitespace-pre-wrap leading-relaxed border-t border-border/40 pt-4">
+                {post.description}
+              </p>
+            )}
+
+            {post.tags.length > 0 && (
+              <div className="flex gap-1.5 flex-wrap pt-1">
+                {post.tags.map((t) => (
+                  <span key={t} className="text-[11px] md:text-xs bg-muted text-muted-foreground px-2.5 py-1 rounded-full inline-flex items-center gap-0.5 font-medium">
+                    <Hash className="h-3 w-3 opacity-70" />{t}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* 위치 카드: 모바일에서도 자연스러운 내장형 블록 처리 */}
+            <div className="rounded-xl border border-border bg-card p-4 shadow-soft">
+              <div className="flex items-center gap-1.5 text-xs md:text-sm font-semibold text-foreground mb-3">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>{post.floor ? `${post.floor}층` : "층 미지정"} {post.location_label && `· ${post.location_label}`}</span>
+              </div>
+              {post.floor && post.location_x != null && post.location_y != null && (
+                <div className="aspect-[4/3] sm:aspect-video md:aspect-square rounded-lg overflow-hidden border border-border/60">
+                  <FloorMap floor={post.floor} selected={{ x: post.location_x, y: post.location_y }} />
+                </div>
+              )}
+            </div>
+
+            {/* 작성자 액션 컨트롤 버튼 바 */}
             {isOwner && (
               <div className="flex gap-2 pt-1">
-                <Button variant="outline" size="sm" onClick={toggleStatus} className="flex-1 h-9 text-xs font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5 mr-1 text-success" />
+                <Button onClick={toggleResolved} variant={post.status === "open" ? "default" : "outline"}
+                  className={post.status === "open" ? "gradient-hero text-primary-foreground border-0 flex-1 h-10 text-xs md:text-sm" : "flex-1 h-10 text-xs md:text-sm"}>
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
                   {post.status === "open" ? "해결 완료" : "다시 진행하기"}
                 </Button>
-                <Button variant="destructive" size="sm" onClick={deletePost} className="h-9 text-xs font-medium px-3">
-                  <Trash2 className="h-3.5 w-3.5" />
+                <Button variant="outline" size="icon" onClick={() => nav(`/post/${post.id}/edit`)} className="h-10 w-10 shrink-0">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" onClick={deletePost} className="h-10 w-10 shrink-0 text-destructive hover:bg-destructive/10">
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             )}
           </div>
         </div>
+
+        {/* 💬 하단 타임라인형 댓글 섹션 (답답한 외곽 박스 제거 완료) */}
+        <section className="mt-10 md:mt-14 border-t border-border/60 pt-6 md:pt-8">
+          <h2 className="font-display text-base md:text-xl font-bold text-foreground mb-4">댓글 {comments.length}</h2>
+
+          {user ? (
+            <form onSubmit={addComment} className="flex gap-2 mb-6 items-end">
+              <div className="flex-1">
+                <Textarea value={comment} onChange={(e) => setComment(e.target.value)}
+                  placeholder="정보를 알고 계시다면 따뜻한 댓글을 남겨주세요..." rows={2} maxLength={500}
+                  className="text-xs md:text-sm bg-muted/40 resize-none focus-visible:ring-1" />
+              </div>
+              <Button type="submit" disabled={posting || !comment.trim()}
+                className="gradient-hero text-primary-foreground border-0 h-10 px-4 shrink-0">
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+          ) : (
+            <div className="rounded-xl bg-muted/40 p-4 text-center text-xs md:text-sm text-muted-foreground mb-6">
+              댓글을 작성하려면 <Link to="/auth" className="text-primary underline font-semibold">로그인</Link>이 필요합니다.
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {comments.length === 0 && (
+              <p className="text-xs md:text-sm text-muted-foreground text-center py-10 opacity-70">아직 등록된 댓글이 없습니다. 첫 마디를 건네보세요!</p>
+            )}
+            {comments.map((c) => {
+              const ini = (c.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
+              return (
+                <div key={c.id} className="flex gap-3 rounded-xl border border-border/40 bg-card p-3.5 shadow-sm">
+                  <Avatar className="h-7 w-7 md:h-8 md:w-8 shrink-0 border border-border/20">
+                    <AvatarImage src={c.profiles?.avatar_url ?? undefined} />
+                    <AvatarFallback className="text-[10px] md:text-xs bg-primary/10 text-primary font-bold">{ini}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-xs md:text-sm text-foreground truncate">{c.profiles?.display_name ?? "사용자"}</span>
+                      <span className="text-[10px] md:text-xs text-muted-foreground opacity-80">
+                        {formatDistanceToNow(new Date(c.created_at), { locale: ko, addSuffix: true })}
+                      </span>
+                    </div>
+                    <p className="text-xs md:text-sm mt-1 whitespace-pre-wrap text-slate-700 leading-relaxed">{c.content}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </AppLayout>
   );
