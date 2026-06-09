@@ -61,8 +61,8 @@ const Auth = () => {
           <h2 className="font-display text-4xl font-bold leading-tight mb-3">
             잃어버린 물건이<br />4분만에 돌아오는
           </h2>
-          <p className="text-primary-foreground/70 max-w-sm">
-            사진, 위치, 해시태그로 누구나 쉽게 분실물을 등록하고 찾을 수 있습니다
+          <p className="text-primary-foreground/70">
+            사진, 위치, 해시태그로 누구나 쉽게<br />분실물을 등록하고 찾을 수 있습니다
           </p>
         </div>
         <div className="relative text-xs opacity-60">2026 정보과학프로젝트</div>
