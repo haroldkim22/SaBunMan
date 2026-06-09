@@ -181,7 +181,6 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
             <input
               type="file"
               accept="image/*"
-              capture="environment"
               className="sr-only"
               onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
             />
