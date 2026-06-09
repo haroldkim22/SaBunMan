@@ -10,7 +10,6 @@ type Props = {
   onClick?: (x: number, y: number) => void;
   onMarkerClick?: (id: string) => void;
   className?: string;
-  /** 확대/축소 컨트롤 사용 여부 (기본 true) */
   zoomable?: boolean;
 };
 
@@ -39,25 +38,33 @@ export const FloorMap = ({
     onClick(x, y);
   };
 
+  // 핵심 수정 1: 지도가 깨지지 않고 반응형으로 크기가 조절되는 컨테이너 스타일링
   const content = (
-    <div className="relative w-full" style={{ aspectRatio: `${VB_W} / ${VB_H}`, maxHeight: "100%" }}>
-      {/* 배경 배치도 이미지 */}
-      <img
-        src={floorSrc(floor)}
-        alt={`${floor}층 배치도`}
-        className="absolute inset-0 w-full h-full select-none pointer-events-none"
-        draggable={false}
-      />
-
-      {/* 인터랙션 오버레이 */}
+    <div
+      style={{
+        width: "100%",
+        height: "auto",
+        maxHeight: "100%",
+        aspectRatio: `${VB_W} / ${VB_H}`,
+      }}
+      className="relative"
+    >
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        className={`absolute inset-0 w-full h-full ${onClick ? "cursor-crosshair" : ""}`}
+        className={`w-full h-full ${onClick ? "cursor-crosshair" : ""}`}
         onClick={handleClick}
         onMouseMove={(e) => setHover(toNorm(e))}
         onMouseLeave={() => setHover(null)}
-        preserveAspectRatio="none"
       >
+        {/* 핵심 수정 2: 배경 이미지를 SVG 내부 요소로 삽입하여 마커와 완벽 동기화 */}
+        <image
+          href={floorSrc(floor)}
+          width={VB_W}
+          height={VB_H}
+          className="select-none pointer-events-none"
+        />
+
+        {/* 인터랙션 오버레이 가이드라인 */}
         {hover && onClick && (
           <g style={{ pointerEvents: "none" }} opacity="0.5">
             <line x1={hover.x * VB_W} y1="0" x2={hover.x * VB_W} y2={VB_H}
@@ -67,6 +74,7 @@ export const FloorMap = ({
           </g>
         )}
 
+        {/* 마커 렌더링 */}
         {markers.map((m) => (
           <g key={m.id} style={{ cursor: "pointer" }}
             onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}>
@@ -76,12 +84,13 @@ export const FloorMap = ({
             <circle cx={m.x * VB_W} cy={m.y * VB_H} r="11"
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
               stroke="white" strokeWidth="3">
-              <animate attributeName="r" values="11;15;11" dur="0.5" repeatCount="indefinite" />
+              <animate attributeName="r" values="11;15;11" dur="1.5" repeatCount="indefinite" />
             </circle>
             <title>{m.title}</title>
           </g>
         ))}
 
+        {/* 선택된 위치 핀 */}
         {selected && (
           <g style={{ pointerEvents: "none" }}>
             <circle cx={selected.x * VB_W} cy={selected.y * VB_H} r="28"
@@ -97,7 +106,7 @@ export const FloorMap = ({
   if (!zoomable) {
     return (
       <div
-        className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
+        className={`relative rounded-2xl border border-border bg-card overflow-hidden flex items-center justify-center ${className ?? ""}`}
         style={{ width: "100%", height: "55vh" }}
       >
         {content}
@@ -114,19 +123,21 @@ export const FloorMap = ({
         initialScale={1}
         minScale={1}
         maxScale={7}
-        wheel={{ step: 0.01, smooth: true }}
+        wheel={{ step: 0.05, smooth: true }}
         doubleClick={{ disabled: true }}
         panning={{ disabled: false, velocityDisabled: true }}
-        animationDuration={30}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
+            {/* 핵심 수정 3: contentClass에 flex와 중앙 정렬을 주어 지도가 화면 한가운데 예쁘게 배치되도록 함 */}
             <TransformComponent
               wrapperClass="!w-full !h-full"
-              contentClass="!w-full !h-full"
+              contentClass="!w-full !h-full flex items-center justify-center"
             >
               {content}
             </TransformComponent>
+
+            {/* 컨트롤 버튼 디자인 */}
             <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-10">
               <Button type="button" size="icon" variant="secondary"
                 className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
