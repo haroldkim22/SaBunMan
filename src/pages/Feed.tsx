@@ -80,9 +80,11 @@ const Feed = () => {
               <h1 className="font-display text-2xl md:text-4xl font-bold">분실물 피드</h1>
               <p className="text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">최신 등록순 // 총 {posts.length}건</p>
             </div>
-            <Button asChild className="gradient-hero text-primary-foreground border-0 shadow-soft w-full md:w-auto h-10 md:h-11 justify-center text-sm">
-              <Link to="/new"><Plus className="h-4 w-4 mr-1" />새 게시물</Link>
-            </Button>
+            <Button asChild className="hidden md:flex gradient-hero text-primary-foreground border-0 shadow-md hover:opacity-90 transition-opacity">
+              <Link to="/new" className="flex items-center gap-1.5 font-medium">
+                <Plus className="h-4 w-4" />새 게시물
+              </Link>
+            </Button>    
           </div>
 
           <div className="mt-4 md:mt-6 flex flex-col md:flex-row gap-2.5 md:gap-3">

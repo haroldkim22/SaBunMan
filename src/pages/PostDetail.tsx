@@ -200,7 +200,6 @@ const PostDetail = () => {
           </div>
         </div>
 
-        {/* 💬 하단 타임라인형 댓글 섹션 (답답한 외곽 박스 제거 완료) */}
         <section className="mt-10 md:mt-14 border-t border-border/60 pt-6 md:pt-8">
           <h2 className="font-display text-base md:text-xl font-bold text-foreground mb-4">댓글 {comments.length}</h2>
 
@@ -223,9 +222,6 @@ const PostDetail = () => {
           )}
 
           <div className="space-y-3">
-            {comments.length === 0 && (
-              <p className="text-xs md:text-sm text-muted-foreground text-center py-10 opacity-70">아직 등록된 댓글이 없습니다. 첫 마디를 건네보세요!</p>
-            )}
             {comments.map((c) => {
               const ini = (c.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
               return (
