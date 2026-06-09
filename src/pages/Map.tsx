@@ -161,3 +161,5 @@ export const FloorMap = ({
     </div>
   );
 };
+
+export default Map;
