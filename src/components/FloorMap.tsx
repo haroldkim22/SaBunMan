@@ -40,7 +40,7 @@ export const FloorMap = ({
   };
 
   const content = (
-    <div className="relative w-full" style={{ aspectRatio: `${VB_W} / ${VB_H}` }}>
+    <div className="relative w-full" style={{ aspectRatio: `${VB_W} / ${VB_H}`, maxHeight: "100%" }}>
       {/* 배경 배치도 이미지 */}
       <img
         src={floorSrc(floor)}
@@ -96,14 +96,20 @@ export const FloorMap = ({
 
   if (!zoomable) {
     return (
-      <div className={`relative rounded-2xl border border-border bg-card overflow-auto ${className ?? ""}`} style={{ maxWidth: "100%", maxHeight: "60vh" }}>
+      <div
+        className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
+        style={{ width: "100%", height: "55vh" }}
+      >
         {content}
       </div>
     );
   }
 
   return (
-    <div className={`relative rounded-2xl border border-border bg-card overflow-auto ${className ?? ""}`} style={{ maxWidth: "100vw", maxHeight: "80vh" }}>
+    <div
+      className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
+      style={{ width: "100%", height: "55vh" }}
+    >
       <TransformWrapper
         initialScale={1}
         minScale={1}
@@ -116,8 +122,8 @@ export const FloorMap = ({
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
             <TransformComponent
-              wrapperClass="!w-full"
-              contentClass="!w-full"
+              wrapperClass="!w-full !h-full"
+              contentClass="!w-full !h-full"
             >
               {content}
             </TransformComponent>
