@@ -67,7 +67,6 @@ const Feed = () => {
 
   return (
     <AppLayout>
-      {/* 전역 스크롤바 숨김 전용 전역 스타일링 헤드 */}
       <style>{`
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -76,7 +75,6 @@ const Feed = () => {
       <section className="border-b border-border/60 bg-gradient-to-b from-muted/40 to-transparent">
         <div className="container py-6 md:py-8 px-4 md:px-8">
           
-          {/* 타이틀 및 새 게시물 버튼 */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-4">
             <div>
               <h1 className="font-display text-2xl md:text-4xl font-bold">분실물 피드</h1>
@@ -87,7 +85,6 @@ const Feed = () => {
             </Button>
           </div>
 
-          {/* 💡 원상복구 및 최적화 핵심 영역: PC 버전은 md:flex-row 가로 정렬로 완전 원상복구! */}
           <div className="mt-4 md:mt-6 flex flex-col md:flex-row gap-2.5 md:gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -96,7 +93,6 @@ const Feed = () => {
                 className="pl-9 h-10 md:h-11 bg-card text-sm" />
             </div>
 
-            {/* 모바일에서는 깔끔하게 가로 터치 드래그가 작동하되 지저분한 하단 바만 은닉 */}
             <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0 no-scrollbar snap-x touch-pan-x">
               {(["all", "found", "lost", "open"] as const).map((f) => (
                 <Button key={f} variant={filter === f ? "default" : "outline"}
@@ -109,7 +105,6 @@ const Feed = () => {
             </div>
           </div>
 
-          {/* 추천 태그 스크롤바 제어 */}
           {trendingTags.length > 0 && (
             <div className="mt-3.5 flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 no-scrollbar whitespace-nowrap touch-pan-x">
               <span className="text-[11px] md:text-xs font-medium text-muted-foreground shrink-0 mr-1">추천 태그</span>
@@ -125,7 +120,6 @@ const Feed = () => {
         </div>
       </section>
 
-      {/* 메인 피드 리스트 그리드 카드 섹션 */}
       <section className="container py-6 md:py-8 px-4 md:px-8">
         {loading ? (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
