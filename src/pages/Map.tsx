@@ -67,9 +67,16 @@ const Map = () => {
           <div>
             <div
               className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-soft"
-              style={{ minHeight: "min(65vh, 720px)", maxHeight: "calc(100vh - 240px)" }}
+              style={{ height: "min(65vh, 720px)", maxHeight: "calc(100vh - 240px)" }}
             >
-              <FloorMap floor={floor} markers={visible} onMarkerClick={(id) => nav(`/post/${id}`)} />
+              <div className="h-full w-full">
+                <FloorMap
+                  className="h-full w-full"
+                  floor={floor}
+                  markers={visible}
+                  onMarkerClick={(id) => nav(`/post/${id}`)}
+                />
+              </div>
             </div>
             <div className="mt-4 flex gap-4 text-sm">
               <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-success" />주웠어요</div>
