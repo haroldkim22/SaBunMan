@@ -207,7 +207,7 @@ const PostDetail = () => {
             <form onSubmit={addComment} className="flex gap-2 mb-6 items-end">
               <div className="flex-1">
                 <Textarea value={comment} onChange={(e) => setComment(e.target.value)}
-                  placeholder="정보를 알고 계시다면 따뜻한 댓글을 남겨주세요..." rows={2} maxLength={500}
+                  placeholder="댓글을 입력하세요." rows={2} maxLength={500}
                   className="text-xs md:text-sm bg-muted/40 resize-none focus-visible:ring-1" />
               </div>
               <Button type="submit" disabled={posting || !comment.trim()}
