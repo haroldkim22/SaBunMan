@@ -37,13 +37,36 @@ export const FloorMap = ({
     onClick(x, y);
   };
 
+  // 마커 반지름 – 줌 배율에 반비례해 화면상 크기가 일정하게 유지됨
+  const MARKER_R = 11;
+  const PULSE_R1 = 11;
+  const PULSE_R2 = 15;
+  const HALO_R = 22;
+  const SEL_R = 14;
+  const SEL_HALO_R = 28;
+
+  // SVG viewBox 단위로 환산한 반지름 (화면 픽셀 → viewBox 단위)
+  // TransformWrapper 내부 scale을 반영해 항상 동일한 화면 크기를 유지
+  const mr = MARKER_R / scale;
+  const pr1 = PULSE_R1 / scale;
+  const pr2 = PULSE_R2 / scale;
+  const hr = HALO_R / scale;
+  const sr = SEL_R / scale;
+  const shr = SEL_HALO_R / scale;
+  const strokeW = 3 / scale;
+  const selStrokeW = 4 / scale;
+
   const content = (
-    <div className="relative w-full" style={{ aspectRatio: `${VB_W} / ${VB_H}`, maxHeight: "80vh" }}>
+    // aspect-ratio로 비율을 유지하고, 부모 높이를 초과하지 않도록 max-height는 외부 컨테이너가 담당
+    <div
+      className="relative w-full"
+      style={{ aspectRatio: `${VB_W} / ${VB_H}` }}
+    >
       {/* 배경 배치도 이미지 */}
       <img
         src={floorSrc(floor)}
         alt={`${floor}층 배치도`}
-        className="absolute inset-0 w-full h-full select-none pointer-events-none"
+        className="absolute inset-0 w-full h-full select-none pointer-events-none object-contain"
         draggable={false}
       />
 
@@ -58,9 +81,9 @@ export const FloorMap = ({
         {hover && onClick && (
           <g style={{ pointerEvents: "none" }} opacity="0.5">
             <line x1={hover.x * VB_W} y1="0" x2={hover.x * VB_W} y2={VB_H}
-              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" vectorEffect="non-scaling-stroke" />
+              stroke="hsl(var(--primary))" strokeWidth={1.5 / scale} strokeDasharray={`${6 / scale} ${6 / scale}`} vectorEffect="non-scaling-stroke" />
             <line x1="0" y1={hover.y * VB_H} x2={VB_W} y2={hover.y * VB_H}
-              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" vectorEffect="non-scaling-stroke" />
+              stroke="hsl(var(--primary))" strokeWidth={1.5 / scale} strokeDasharray={`${6 / scale} ${6 / scale}`} vectorEffect="non-scaling-stroke" />
           </g>
         )}
 
@@ -68,16 +91,16 @@ export const FloorMap = ({
           <g
             key={m.id}
             style={{ cursor: "pointer" }}
-            transform={`translate(${m.x * VB_W}, ${m.y * VB_H}) scale(${1 / scale})`}
+            transform={`translate(${m.x * VB_W}, ${m.y * VB_H})`}
             onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}
           >
-            <circle cx="0" cy="0" r="22"
+            <circle cx="0" cy="0" r={hr}
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
               opacity="0.25" />
-            <circle cx="0" cy="0" r="11"
+            <circle cx="0" cy="0" r={mr}
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
-              stroke="white" strokeWidth="3">
-              <animate attributeName="r" values="11;15;11" dur="0.5" repeatCount="indefinite" />
+              stroke="white" strokeWidth={strokeW}>
+              <animate attributeName="r" values={`${pr1};${pr2};${pr1}`} dur="0.5" repeatCount="indefinite" />
             </circle>
             <title>{m.title}</title>
           </g>
@@ -86,33 +109,37 @@ export const FloorMap = ({
         {selected && (
           <g
             style={{ pointerEvents: "none" }}
-            transform={`translate(${selected.x * VB_W}, ${selected.y * VB_H}) scale(${1 / scale})`}
+            transform={`translate(${selected.x * VB_W}, ${selected.y * VB_H})`}
           >
-            <circle cx="0" cy="0" r="28"
+            <circle cx="0" cy="0" r={shr}
               fill="hsl(var(--primary))" opacity="0.2" />
-            <circle cx="0" cy="0" r="14"
-              fill="hsl(var(--primary))" stroke="white" strokeWidth="4" />
+            <circle cx="0" cy="0" r={sr}
+              fill="hsl(var(--primary))" stroke="white" strokeWidth={selStrokeW} />
           </g>
         )}
       </svg>
     </div>
   );
 
+  // ── non-zoomable (피드 상세 등 작은 인라인 미리보기) ──────────────────
   if (!zoomable) {
     return (
       <div
         className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
-        style={{ width: "100%", height: "55vh" }}
+        // 너비에 맞춰 비율을 유지 (aspect-ratio는 content 내부에서 담당)
+        style={{ width: "100%" }}
       >
         {content}
       </div>
     );
   }
 
+  // ── zoomable (지도 탭) ────────────────────────────────────────────────
   return (
     <div
       className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
-      style={{ width: "100%", height: "55vh" }}
+      // 지도 탭: 세로를 뷰포트의 60% 이하로 제한하되 가로 100% 사용
+      style={{ width: "100%", maxHeight: "62vh", aspectRatio: `${VB_W} / ${VB_H}` }}
     >
       <TransformWrapper
         initialScale={1}
@@ -127,8 +154,8 @@ export const FloorMap = ({
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
             <TransformComponent
-              wrapperClass="!w-full !h-full"
-              contentClass="!w-full !h-full"
+              wrapperStyle={{ width: "100%", height: "100%" }}
+              contentStyle={{ width: "100%", height: "100%" }}
             >
               {content}
             </TransformComponent>

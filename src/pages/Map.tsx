@@ -54,9 +54,8 @@ const Map = () => {
             <div className="text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
             {[5, 4, 3, 2, 1].map((f) => (
               <button key={f} onClick={() => setFloor(f)}
-                className={`w-full text-left p-4 rounded-xl border transition-all ${
-                  floor === f ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/50"
-                }`}>
+                className={`w-full text-left p-4 rounded-xl border transition-all ${floor === f ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/50"
+                  }`}>
                 <div className="font-display text-2xl font-bold">{f}F</div>
                 <div className={`text-xs mt-0.5 ${floor === f ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                   {markers.filter((m) => m.floor === f).length}건
