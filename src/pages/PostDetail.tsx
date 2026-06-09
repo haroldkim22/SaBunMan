@@ -104,16 +104,14 @@ const PostDetail = () => {
 
   return (
     <AppLayout>
-      {/* 모바일 4, PC 8 패딩 최적화 배분 */}
       <div className="container py-6 md:py-8 px-4 md:px-8 max-w-4xl">
         <Button variant="ghost" asChild className="mb-4 -ml-3 h-9 text-xs md:text-sm text-muted-foreground">
           <Link to="/feed"><ArrowLeft className="h-4 w-4 mr-1" />피드로</Link>
         </Button>
 
-        {/* 💡 PC 레이아웃 원상복구 (md:grid-cols-2 분할형 기조 회복) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           
-          {/* 좌측: 이미지 영역 (모바일에서는 화면 비율에 맞게 자연스럽게 흐름 유지) */}
+          {/* 좌측: 이미지 영역 */}
           <div>
             <div className="aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-muted relative shadow-soft border border-border/40">
               {post.image_url ? (
@@ -168,15 +166,28 @@ const PostDetail = () => {
               </div>
             )}
 
-            {/* 위치 카드: 모바일에서도 자연스러운 내장형 블록 처리 */}
+            {/* 위치 카드 */}
             <div className="rounded-xl border border-border bg-card p-4 shadow-soft">
               <div className="flex items-center gap-1.5 text-xs md:text-sm font-semibold text-foreground mb-3">
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>{post.floor ? `${post.floor}층` : "층 미지정"} {post.location_label && `· ${post.location_label}`}</span>
               </div>
               {post.floor && post.location_x != null && post.location_y != null && (
-                <div className="aspect-[4/3] sm:aspect-video md:aspect-square rounded-lg overflow-hidden border border-border/60">
-                  <FloorMap floor={post.floor} selected={{ x: post.location_x, y: post.location_y }} />
+                /* 💡 에러 해결 및 사이즈 연동 포인트: 
+                   강제 수치 가두기(aspect)를 없애 지도의 오리지널 가로세로 스케일을 따르도록 처리하고,
+                   FloorMap 컴포넌트가 정상 빌드될 수 있도록 원본 markers 프로퍼티 구조 매핑을 복구했습니다. */
+                <div className="w-full h-auto rounded-lg overflow-hidden border border-border/60">
+                  <FloorMap 
+                    floor={post.floor} 
+                    markers={[{ 
+                      id: post.id, 
+                      x: post.location_x, 
+                      y: post.location_y, 
+                      type: post.type, 
+                      title: post.title, 
+                      floor: post.floor 
+                    }]} 
+                  />
                 </div>
               )}
             </div>
@@ -200,7 +211,7 @@ const PostDetail = () => {
           </div>
         </div>
 
-        {/* 💬 하단 타임라인형 댓글 섹션 (답답한 외곽 박스 제거 완료) */}
+        {/* 💬 하단 타임라인형 댓글 섹션 */}
         <section className="mt-10 md:mt-14 border-t border-border/60 pt-6 md:pt-8">
           <h2 className="font-display text-base md:text-xl font-bold text-foreground mb-4">댓글 {comments.length}</h2>
 
