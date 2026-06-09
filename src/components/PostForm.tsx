@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FloorMap } from "@/components/FloorMap";
 import { toast } from "sonner";
-import { Camera, Hash, X, Save, Upload } from "lucide-react";
+import { Camera, Hash, ImagePlus, Images, X, Save, Upload } from "lucide-react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -50,6 +51,7 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
   const [imageUrl, setImageUrl] = useState<string | null>(initialValues?.imageUrl ?? null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [photoChooserOpen, setPhotoChooserOpen] = useState(false);
 
   // Refs for hidden file inputs
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -72,6 +74,32 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
     if (preview) URL.revokeObjectURL(preview);
     setPreview(f ? URL.createObjectURL(f) : null);
     if (!f) setImageUrl(null);
+  };
+
+  const isMobilePhotoPicker = () => {
+    const ua = navigator.userAgent || navigator.vendor;
+    const isiPadOS = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+
+    return /Android|iPhone|iPad|iPod/i.test(ua) || isiPadOS;
+  };
+
+  const openPhotoPicker = () => {
+    if (isMobilePhotoPicker()) {
+      setPhotoChooserOpen(true);
+      return;
+    }
+
+    fileInputRef.current?.click();
+  };
+
+  const chooseCamera = () => {
+    setPhotoChooserOpen(false);
+    cameraInputRef.current?.click();
+  };
+
+  const chooseGallery = () => {
+    setPhotoChooserOpen(false);
+    fileInputRef.current?.click();
   };
 
   const submit = async (e: FormEvent) => {
@@ -181,14 +209,33 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
 
         <div>
           <Label>사진</Label>
-          <div className="mt-2 flex gap-2">
-            <Button type="button" variant="outline" onClick={() => cameraInputRef.current?.click()}>
-              <Camera className="mr-2 h-4 w-4" /> 카메라
-            </Button>
-            <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-              <Upload className="mr-2 h-4 w-4" /> 갤러리
-            </Button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={openPhotoPicker}
+            className="mt-2 h-28 w-full flex-col gap-3 border-dashed bg-muted/30 text-base hover:bg-muted/60 sm:h-32"
+          >
+            <ImagePlus className="h-8 w-8 text-primary" />
+            <span>{currentImage ? "사진 바꾸기" : "사진 추가하기"}</span>
+          </Button>
+          <Dialog open={photoChooserOpen} onOpenChange={setPhotoChooserOpen}>
+            <DialogContent className="w-[calc(100%-2rem)] rounded-xl">
+              <DialogHeader>
+                <DialogTitle>사진 추가</DialogTitle>
+                <DialogDescription>카메라로 촬영하거나 갤러리에서 이미지를 선택하세요.</DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-3">
+                <Button type="button" variant="outline" onClick={chooseCamera} className="h-24 flex-col gap-2">
+                  <Camera className="h-7 w-7 text-primary" />
+                  <span>카메라</span>
+                </Button>
+                <Button type="button" variant="outline" onClick={chooseGallery} className="h-24 flex-col gap-2">
+                  <Images className="h-7 w-7 text-primary" />
+                  <span>갤러리</span>
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
           {/* Hidden inputs */}
           <input
             ref={cameraInputRef}
