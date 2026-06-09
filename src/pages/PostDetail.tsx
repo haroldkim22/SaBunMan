@@ -26,7 +26,7 @@ type Comment = {
 };
 
 const typeLabel = { found: "주웠어요", lost: "잃어버렸어요" } as const;
-const typeStyle = { found: "bg-success text-success-foreground", lost: "bg-warning text-warning-foreground" } as const;
+const typeStyle = { found: "bg-[#76b900] text-black", lost: "bg-[#000000] text-white" } as const;
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -46,7 +46,6 @@ const PostDetail = () => {
         supabase.from("comments").select("*").eq("post_id", id).order("created_at"),
       ]);
 
-      // profiles는 FK가 없어 별도 조회
       const userIds = Array.from(new Set([
         ...(p ? [p.author_id] : []),
         ...((cs ?? []).map((c: any) => c.author_id)),
@@ -66,7 +65,6 @@ const PostDetail = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => { load(); }, [id]);
 
@@ -98,80 +96,87 @@ const PostDetail = () => {
     nav("/feed");
   };
 
-  if (loading) return <AppLayout><div className="container py-20 text-center text-muted-foreground">불러오는 중...</div></AppLayout>;
-  if (!post) return <AppLayout><div className="container py-20 text-center">게시물을 찾을 수 없습니다.</div></AppLayout>;
+  if (loading) return <AppLayout><div className="container mx-auto py-20 text-center text-[#757575] font-bold">불러오는 중...</div></AppLayout>;
+  if (!post) return <AppLayout><div className="container mx-auto py-20 text-center font-bold text-black">게시물을 찾을 수 없습니다.</div></AppLayout>;
 
   const isOwner = user?.id === post.author_id;
   const initials = (post.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
 
   return (
     <AppLayout>
-      <div className="container py-8 max-w-4xl">
-        <Button variant="ghost" asChild className="mb-4 -ml-3">
-          <Link to="/feed"><ArrowLeft className="h-4 w-4 mr-1" />피드로</Link>
+      <div className="container mx-auto py-12 px-12 max-w-5xl">
+        <Button variant="ghost" asChild className="mb-8 rounded-sm font-bold px-0 hover:bg-transparent hover:text-[#76b900] text-black">
+          <Link to="/feed"><ArrowLeft className="h-4 w-4 mr-2" />피드로 돌아가기</Link>
         </Button>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-12">
           <div>
-            <div className="aspect-square rounded-2xl overflow-hidden bg-muted relative">
+            <div className="aspect-square rounded-none border border-[#cccccc] bg-[#f7f7f7] relative">
+              <div className="absolute top-0 left-0 w-4 h-4 bg-[#76b900] z-10" />
               {post.image_url ? (
                 <img src={post.image_url} alt={post.title} className="w-full h-full object-cover" />
               ) : (
-                <div className="h-full grid place-items-center text-muted-foreground"><ImageOff className="h-12 w-12" /></div>
+                <div className="h-full grid place-items-center text-[#cccccc]"><ImageOff className="h-12 w-12" /></div>
               )}
-              <div className="absolute top-4 left-4 flex gap-2">
-                <Badge className={`${typeStyle[post.type]} border-0 font-bold`}>{typeLabel[post.type]}</Badge>
-                {post.status === "resolved" && <Badge variant="secondary" className="bg-background/90 backdrop-blur">해결완료</Badge>}
+              <div className="absolute top-4 right-4 flex gap-2">
+                <Badge className={`${typeStyle[post.type]} border border-[#cccccc] rounded-sm font-bold text-[12px] px-2.5 py-1`}>{typeLabel[post.type]}</Badge>
+                {post.status === "resolved" && <Badge variant="secondary" className="bg-white text-black border border-[#cccccc] rounded-sm font-bold text-[12px] px-2.5 py-1">해결완료</Badge>}
               </div>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div>
-              <h1 className="font-display text-3xl font-bold leading-tight">{post.title}</h1>
-              <div className="flex items-center gap-2 mt-3">
-                <Avatar className="h-7 w-7">
+          <div className="space-y-8">
+            <div className="pb-6 border-b border-[#cccccc]">
+              <h1 className="text-[36px] font-bold leading-[1.25] text-black">{post.title}</h1>
+              <div className="flex items-center gap-3 mt-4">
+                <Avatar className="h-8 w-8 rounded-sm border border-[#cccccc]">
                   <AvatarImage src={post.profiles?.avatar_url ?? undefined} />
-                  <AvatarFallback className="text-xs bg-primary text-primary-foreground">{initials}</AvatarFallback>
+                  <AvatarFallback className="text-[12px] font-bold bg-[#f7f7f7] text-black rounded-sm">{initials}</AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium">{post.profiles?.display_name ?? "사용자"}</span>
-                <span className="text-xs text-muted-foreground">· {formatDistanceToNow(new Date(post.created_at), { locale: ko, addSuffix: true })}</span>
+                <span className="text-[14px] font-bold text-black">{post.profiles?.display_name ?? "사용자"}</span>
+                <span className="text-[14px] text-[#757575] font-bold">· {formatDistanceToNow(new Date(post.created_at), { locale: ko, addSuffix: true })}</span>
               </div>
             </div>
 
-            {post.description && <p className="text-foreground/80 whitespace-pre-wrap">{post.description}</p>}
+            {post.description && <p className="text-[16px] leading-[1.75] text-[#1a1a1a] whitespace-pre-wrap">{post.description}</p>}
 
             {post.tags.length > 0 && (
-              <div className="flex gap-1.5 flex-wrap">
+              <div className="flex gap-2 flex-wrap">
                 {post.tags.map((t) => (
-                  <span key={t} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+                  <span key={t} className="text-[12px] font-bold bg-[#f7f7f7] border border-[#cccccc] text-[#1a1a1a] px-3 py-1 rounded-sm inline-flex items-center gap-1">
                     <Hash className="h-3 w-3" />{t}
                   </span>
                 ))}
               </div>
             )}
 
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                {post.floor ? `${post.floor}층` : "층 미지정"} {post.location_label && `· ${post.location_label}`}
+            <div className="rounded-sm border border-[#cccccc] bg-white p-6 relative">
+              <div className="absolute top-0 right-0 w-2 h-2 bg-black" />
+              <div className="flex items-center gap-2 text-[14px] font-bold mb-4 text-black uppercase tracking-wider">
+                <MapPin className="h-4 w-4" />
+                Location
+              </div>
+              <div className="text-[16px] font-bold mb-4 text-[#5e5e5e]">
+                 {post.floor ? `${post.floor}층` : "층 미지정"} {post.location_label && `· ${post.location_label}`}
               </div>
               {post.floor && post.location_x != null && post.location_y != null && (
-                <FloorMap floor={post.floor} selected={{ x: post.location_x, y: post.location_y }} className="mt-2" />
+                <div className="border border-[#cccccc]">
+                  <FloorMap floor={post.floor} selected={{ x: post.location_x, y: post.location_y }} className="mt-0" />
+                </div>
               )}
             </div>
 
             {isOwner && (
-              <div className="flex gap-2">
+              <div className="flex gap-3 pt-6">
                 <Button onClick={toggleResolved} variant={post.status === "open" ? "default" : "outline"}
-                  className={post.status === "open" ? "gradient-hero text-primary-foreground border-0 flex-1" : "flex-1"}>
-                  <CheckCircle2 className="h-4 w-4 mr-1" />
-                  {post.status === "open" ? "해결 완료" : "다시 열기"}
+                  className={`flex-1 rounded-sm font-bold text-[16px] h-12 border-none ${post.status === "open" ? "bg-[#76b900] text-black hover:bg-[#5a8d00]" : "bg-[#f7f7f7] text-black border border-[#cccccc] hover:bg-[#e0e0e0]"}`}>
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  {post.status === "open" ? "해결 완료로 표시" : "다시 미해결로"}
                 </Button>
-                <Button variant="outline" onClick={() => nav(`/post/${post.id}/edit`)}>
+                <Button variant="outline" onClick={() => nav(`/post/${post.id}/edit`)} className="rounded-sm h-12 w-12 border-[#cccccc] text-black hover:bg-[#f7f7f7]">
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" onClick={deletePost} className="text-destructive">
+                <Button variant="outline" onClick={deletePost} className="rounded-sm h-12 w-12 border-[#cccccc] text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-600">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -180,40 +185,40 @@ const PostDetail = () => {
         </div>
 
         {/* Comments */}
-        <section className="mt-12">
-          <h2 className="font-display text-xl font-bold mb-4">댓글 {comments.length}</h2>
+        <section className="mt-16 pt-12 border-t border-[#cccccc]">
+          <h2 className="text-[24px] font-bold leading-[1.25] text-black mb-8">댓글 <span className="text-[#757575]">({comments.length})</span></h2>
 
           {user ? (
-            <form onSubmit={addComment} className="flex gap-2 mb-6">
+            <form onSubmit={addComment} className="flex gap-4 mb-10">
               <Textarea value={comment} onChange={(e) => setComment(e.target.value)}
-                placeholder="댓글을 입력하세요..." rows={2} maxLength={500} />
+                placeholder="댓글을 입력하세요..." rows={2} maxLength={500} className="rounded-sm border-[#cccccc] focus-visible:border-[#76b900] focus-visible:ring-0 text-[16px] resize-none" />
               <Button type="submit" disabled={posting || !comment.trim()}
-                className="gradient-hero text-primary-foreground border-0 self-end">
+                className="bg-black text-white hover:bg-[#1a1a1a] rounded-sm font-bold h-auto px-6">
                 <Send className="h-4 w-4" />
               </Button>
             </form>
           ) : (
-            <div className="rounded-xl border border-border p-4 text-sm text-muted-foreground mb-6">
-              댓글을 작성하려면 <Link to="/auth" className="text-primary underline">로그인</Link>하세요.
+            <div className="rounded-sm border border-[#cccccc] bg-[#f7f7f7] p-6 text-[14px] font-bold text-[#5e5e5e] mb-10 text-center">
+              댓글을 작성하려면 <Link to="/auth" className="text-[#76b900] hover:underline">로그인</Link>하세요.
             </div>
           )}
 
-          <div className="space-y-3">
-            {comments.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">아직 댓글이 없어요.</p>}
+          <div className="space-y-4">
+            {comments.length === 0 && <p className="text-[14px] font-bold text-[#757575] text-center py-12 border border-[#cccccc] rounded-sm">아직 댓글이 없어요.</p>}
             {comments.map((c) => {
               const ini = (c.profiles?.display_name ?? "?").slice(0, 2).toUpperCase();
               return (
-                <div key={c.id} className="flex gap-3 rounded-xl border border-border bg-card p-4">
-                  <Avatar className="h-8 w-8">
+                <div key={c.id} className="flex gap-4 rounded-sm border border-[#cccccc] bg-white p-6 relative">
+                  <Avatar className="h-10 w-10 rounded-sm border border-[#cccccc]">
                     <AvatarImage src={c.profiles?.avatar_url ?? undefined} />
-                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">{ini}</AvatarFallback>
+                    <AvatarFallback className="text-[12px] font-bold bg-[#f7f7f7] text-black rounded-sm">{ini}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-semibold">{c.profiles?.display_name ?? "사용자"}</span>
-                      <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(c.created_at), { locale: ko, addSuffix: true })}</span>
+                    <div className="flex items-center gap-3 text-[14px]">
+                      <span className="font-bold text-black">{c.profiles?.display_name ?? "사용자"}</span>
+                      <span className="text-[12px] font-bold text-[#757575]">{formatDistanceToNow(new Date(c.created_at), { locale: ko, addSuffix: true })}</span>
                     </div>
-                    <p className="text-sm mt-1 whitespace-pre-wrap">{c.content}</p>
+                    <p className="text-[15px] mt-2 leading-[1.67] text-[#1a1a1a] whitespace-pre-wrap">{c.content}</p>
                   </div>
                 </div>
               );

@@ -96,10 +96,10 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
   const submitIcon = mode === "edit" ? <Save className="h-4 w-4 mr-2" /> : <Upload className="h-4 w-4 mr-2" />;
 
   return (
-    <form onSubmit={submit} className="grid lg:grid-cols-2 gap-8">
-      <div className="space-y-6">
+    <form onSubmit={submit} className="grid lg:grid-cols-2 gap-12">
+      <div className="space-y-8">
         <div>
-          <Label className="mb-2 block">유형</Label>
+          <Label className="mb-3 block text-[14px] font-bold text-black uppercase tracking-wider">유형</Label>
           <Tabs
             value={type}
             onValueChange={(v) => {
@@ -107,15 +107,15 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
               if (v === "found") setUnknownLocation(false);
             }}
           >
-            <TabsList className="grid grid-cols-2 w-full">
-              <TabsTrigger value="found">🔍 주웠어요</TabsTrigger>
-              <TabsTrigger value="lost">😢 잃어버렸어요</TabsTrigger>
+            <TabsList className="grid grid-cols-2 w-full p-0 bg-[#f7f7f7] border border-[#cccccc] rounded-sm h-12">
+              <TabsTrigger value="found" className="rounded-none data-[state=active]:bg-black data-[state=active]:text-white font-bold text-[15px]">🔍 주웠어요</TabsTrigger>
+              <TabsTrigger value="lost" className="rounded-none data-[state=active]:bg-black data-[state=active]:text-white font-bold text-[15px]">😢 잃어버렸어요</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
         <div>
-          <Label htmlFor="t">제목</Label>
+          <Label htmlFor="t" className="text-[14px] font-bold text-black uppercase tracking-wider">제목</Label>
           <Input
             id="t"
             value={title}
@@ -123,12 +123,12 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
             placeholder="검정 에어팟 프로 (3세대)"
             maxLength={100}
             required
-            className="mt-2"
+            className="mt-3 rounded-sm border-[#cccccc] focus-visible:border-[#76b900] focus-visible:ring-0 text-[16px] h-12"
           />
         </div>
 
         <div>
-          <Label htmlFor="d">설명</Label>
+          <Label htmlFor="d" className="text-[14px] font-bold text-black uppercase tracking-wider">설명</Label>
           <Textarea
             id="d"
             value={desc}
@@ -136,15 +136,15 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
             placeholder="특징, 발견 시각 등을 적어주세요"
             rows={4}
             maxLength={1000}
-            className="mt-2"
+            className="mt-3 rounded-sm border-[#cccccc] focus-visible:border-[#76b900] focus-visible:ring-0 text-[16px] resize-none"
           />
         </div>
 
         <div>
-          <Label>
-            해시태그 <span className="text-xs text-muted-foreground">(최대 8개)</span>
+          <Label className="text-[14px] font-bold text-black uppercase tracking-wider">
+            해시태그 <span className="text-[12px] text-[#757575] font-normal ml-1">(최대 8개)</span>
           </Label>
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-2 mt-3">
             <Input
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
@@ -155,19 +155,20 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
                 }
               }}
               placeholder="검정, 에어팟, 전자기기..."
+              className="rounded-sm border-[#cccccc] focus-visible:border-[#76b900] focus-visible:ring-0 text-[16px] h-12"
             />
-            <Button type="button" variant="outline" onClick={addTag}>
+            <Button type="button" variant="outline" onClick={addTag} className="rounded-sm font-bold border-[#cccccc] text-black h-12 px-6 hover:bg-[#f7f7f7]">
               추가
             </Button>
           </div>
           {tags.length > 0 && (
-            <div className="flex gap-1.5 flex-wrap mt-3">
+            <div className="flex gap-2 flex-wrap mt-4">
               {tags.map((t) => (
-                <span key={t} className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+                <span key={t} className="text-[12px] font-bold bg-[#f7f7f7] border border-[#cccccc] text-[#1a1a1a] px-3 py-1 rounded-sm inline-flex items-center gap-1">
                   <Hash className="h-3 w-3" />
                   {t}
-                  <button type="button" onClick={() => setTags(tags.filter((x) => x !== t))}>
-                    <X className="h-3 w-3 hover:text-destructive" />
+                  <button type="button" onClick={() => setTags(tags.filter((x) => x !== t))} className="ml-1 hover:bg-[#e0e0e0] p-0.5 rounded-sm">
+                    <X className="h-3 w-3 text-black" />
                   </button>
                 </span>
               ))}
@@ -176,8 +177,8 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
         </div>
 
         <div>
-          <Label>사진</Label>
-          <label className="mt-2 block cursor-pointer">
+          <Label className="text-[14px] font-bold text-black uppercase tracking-wider">사진</Label>
+          <label className="mt-3 block cursor-pointer">
             <input
               type="file"
               accept="image/*"
@@ -186,29 +187,29 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
               onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
             />
             {currentImage ? (
-              <div className="relative rounded-xl overflow-hidden border border-border">
+              <div className="relative rounded-sm overflow-hidden border border-[#cccccc]">
                 <img src={currentImage} alt="preview" className="w-full aspect-video object-cover" />
                 <Button
                   type="button"
                   size="sm"
                   variant="secondary"
-                  className="absolute top-2 right-2"
+                  className="absolute top-3 right-3 bg-white text-black border border-[#cccccc] hover:bg-[#f7f7f7] rounded-sm font-bold h-8 w-8 p-0"
                   onClick={(e) => {
                     e.preventDefault();
                     handleFile(null);
                   }}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary hover:bg-muted/50 transition-colors">
+              <div className="border border-dashed border-[#cccccc] rounded-sm p-12 text-center bg-[#f7f7f7] hover:border-black hover:bg-white transition-colors">
                 <div className="grid place-items-center">
-                  <div className="grid h-12 w-12 place-items-center rounded-full bg-primary/10 text-primary mb-3">
+                  <div className="grid h-12 w-12 place-items-center bg-black text-white mb-4 rounded-sm">
                     <Camera className="h-5 w-5" />
                   </div>
-                  <div className="font-medium">사진을 촬영하거나 선택</div>
-                  <div className="text-xs text-muted-foreground mt-1">선택사항</div>
+                  <div className="font-bold text-[16px] text-black">사진을 촬영하거나 선택</div>
+                  <div className="text-[14px] text-[#757575] font-bold mt-1 uppercase tracking-wider">Optional</div>
                 </div>
               </div>
             )}
@@ -216,9 +217,9 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div>
-          <Label className="mb-2 block">발견 위치</Label>
+          <Label className="mb-3 block text-[14px] font-bold text-black uppercase tracking-wider">발견 위치</Label>
           {type === "lost" && (
             <Tabs
               value={unknownLocation ? "unknown" : "map"}
@@ -227,22 +228,22 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
                 setUnknownLocation(isUnknown);
                 if (isUnknown) setPin(null);
               }}
-              className="mb-3"
+              className="mb-4"
             >
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="map">지도에서 선택</TabsTrigger>
-                <TabsTrigger value="unknown">모르겠어요</TabsTrigger>
+              <TabsList className="grid grid-cols-2 w-full p-0 bg-[#f7f7f7] border border-[#cccccc] rounded-sm h-12">
+                <TabsTrigger value="map" className="rounded-none data-[state=active]:bg-black data-[state=active]:text-white font-bold text-[14px]">지도에서 선택</TabsTrigger>
+                <TabsTrigger value="unknown" className="rounded-none data-[state=active]:bg-black data-[state=active]:text-white font-bold text-[14px]">모르겠어요</TabsTrigger>
               </TabsList>
             </Tabs>
           )}
-          <div className="flex gap-2 mb-3 flex-wrap">
+          <div className="flex gap-2 mb-4 flex-wrap">
             {[1, 2, 3, 4, 5].map((f) => (
               <Button
                 key={f}
                 type="button"
                 size="sm"
                 variant={!unknownLocation && floor === f ? "default" : "outline"}
-                className={!unknownLocation && floor === f ? "gradient-hero text-primary-foreground border-0" : ""}
+                className={`h-10 px-4 rounded-sm font-bold text-[14px] ${!unknownLocation && floor === f ? "bg-black text-white border-black" : "bg-white text-black border-[#cccccc] hover:bg-[#f7f7f7]"}`}
                 disabled={unknownLocation}
                 onClick={() => setFloor(f)}
               >
@@ -250,27 +251,27 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
               </Button>
             ))}
           </div>
-          <div className={unknownLocation ? "pointer-events-none opacity-40 transition-opacity" : "transition-opacity"}>
+          <div className={`border border-[#cccccc] p-1 bg-white ${unknownLocation ? "pointer-events-none opacity-40 transition-opacity" : "transition-opacity"}`}>
             <FloorMap floor={floor} selected={pin} onClick={unknownLocation ? undefined : (x, y) => setPin({ x, y })} />
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-[13px] font-bold text-[#757575] mt-3 uppercase tracking-wider">
             {unknownLocation ? "위치를 모르는 상태로 등록됩니다." : "지도를 클릭해 위치를 표시하세요."}{" "}
-            {pin && <span className="text-primary font-medium">✓ 선택됨</span>}
+            {pin && <span className="text-[#76b900] ml-1">✓ SELECTED</span>}
           </p>
         </div>
 
         <div>
-          <Label htmlFor="loc">위치 설명 (선택)</Label>
+          <Label htmlFor="loc" className="text-[14px] font-bold text-black uppercase tracking-wider">위치 설명 <span className="text-[12px] text-[#757575] font-normal ml-1">(선택)</span></Label>
           <Input
             id="loc"
             value={locationLabel}
             onChange={(e) => setLocationLabel(e.target.value)}
             placeholder="예: 화학실 앞 사물함"
-            className="mt-2"
+            className="mt-3 rounded-sm border-[#cccccc] focus-visible:border-[#76b900] focus-visible:ring-0 text-[16px] h-12"
           />
         </div>
 
-        <Button type="submit" disabled={submitting} size="lg" className="w-full gradient-hero text-primary-foreground border-0 shadow-soft">
+        <Button type="submit" disabled={submitting} size="lg" className="w-full bg-[#76b900] text-black hover:bg-[#5a8d00] rounded-sm font-bold text-[18px] h-14 border-none transition-colors">
           {submitIcon}
           {submitting ? (mode === "edit" ? "저장 중..." : "등록 중...") : mode === "edit" ? "수정 저장" : "게시물 등록"}
         </Button>

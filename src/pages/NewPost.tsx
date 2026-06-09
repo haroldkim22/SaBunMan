@@ -55,9 +55,11 @@ const NewPost = () => {
 
   return (
     <AppLayout>
-      <div className="container py-8 max-w-5xl">
-        <h1 className="font-display text-3xl font-bold mb-2">새 게시물</h1>
-        <p className="text-muted-foreground mb-8">분실물 정보를 입력해주세요.</p>
+      <div className="container mx-auto py-12 px-12 max-w-6xl">
+        <div className="mb-10 pb-6 border-b border-[#cccccc]">
+          <h1 className="text-[36px] font-bold leading-[1.25] text-black">새 게시물</h1>
+          <p className="text-[16px] text-[#757575] font-bold mt-2">분실물 정보를 입력해주세요.</p>
+        </div>
         <PostForm mode="new" submitting={submitting} onSubmit={submit} />
       </div>
     </AppLayout>

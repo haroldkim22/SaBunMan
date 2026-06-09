@@ -109,23 +109,26 @@ const EditPost = () => {
   if (loading || !post) {
     return (
       <AppLayout>
-        <div className="container py-20 text-center text-muted-foreground">불러오는 중...</div>
+        <div className="container mx-auto py-20 text-center text-[#757575] font-bold">불러오는 중...</div>
       </AppLayout>
     );
   }
 
   return (
     <AppLayout>
-      <div className="container py-8 max-w-5xl">
-        <Button variant="ghost" asChild className="mb-6 -ml-3">
+      <div className="container mx-auto py-12 px-12 max-w-6xl">
+        <Button variant="ghost" asChild className="mb-6 rounded-sm font-bold px-0 hover:bg-transparent hover:text-[#76b900] text-black">
           <Link to={`/post/${id}`}>
-            <ArrowLeft className="h-4 w-4 mr-1" />
+            <ArrowLeft className="h-4 w-4 mr-2" />
             게시물로 돌아가기
           </Link>
         </Button>
 
-        <h1 className="font-display text-3xl font-bold mb-2">게시물 수정</h1>
-        <p className="text-muted-foreground mb-8">내용을 수정하고 저장하세요.</p>
+        <div className="mb-10 pb-6 border-b border-[#cccccc]">
+          <h1 className="text-[36px] font-bold leading-[1.25] text-black">게시물 수정</h1>
+          <p className="text-[16px] text-[#757575] font-bold mt-2">내용을 수정하고 저장하세요.</p>
+        </div>
+        
         <PostForm mode="edit" initialValues={post} submitting={submitting} onSubmit={submit} />
       </div>
     </AppLayout>

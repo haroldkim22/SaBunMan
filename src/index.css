@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,102 +6,108 @@
 
 @layer base {
   :root {
-    /* Periwinkle palette */
-    --background: 240 60% 98.5%;      /* 매우 부드러운 라벤더 톤 화이트 */
-    --foreground: 240 50% 15%;        /* 깊은 바이올렛-네이비 텍스트 */
+    /* NVIDIA Palette */
+    --background: 0 0% 100%;       /* Canvas */
+    --foreground: 0 0% 0%;         /* Ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 240 50% 15%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 50% 15%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 240 100% 75%;          /* 핵심 Periwinkle (#8080FF) */
-    --primary-foreground: 240 70% 12%; /* #8080FF 위에서의 가독성을 보장하기 위한 어두운 바이올렛-네이비 */
-    --primary-glow: 240 100% 75%;     /* #8080FF */
+    --primary: 82 100% 36%;        /* #76b900 */
+    --primary-foreground: 0 0% 0%; /* On-Primary */
+    --primary-glow: 82 100% 36%;
 
-    --secondary: 240 100% 90%;        /* 연한 Periwinkle (#CCCCFF) */
-    --secondary-foreground: 240 60% 20%;
+    --secondary: 0 0% 97%;         /* Surface-soft #f7f7f7 */
+    --secondary-foreground: 0 0% 0%;
 
-    --muted: 240 40% 94%;              /* 라벤더 그레이 */
-    --muted-foreground: 240 15% 45%;
+    --muted: 0 0% 46%;             /* Mute #757575 */
+    --muted-foreground: 0 0% 46%;
 
-    --accent: 240 100% 90%;           /* #CCCCFF */
-    --accent-foreground: 240 60% 20%;
+    --accent: 82 100% 36%;
+    --accent-foreground: 0 0% 0%;
 
-    --success: 152 60% 38%;
+    --success: 94 100% 26%;        /* #3f8500 */
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 27 100% 44%;        /* #df6500 */
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 81% 51%;      /* #e52020 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 40% 90%;
-    --input: 240 40% 90%;
-    --ring: 240 100% 75%;
+    --border: 0 0% 80%;            /* Hairline #cccccc */
+    --input: 0 0% 80%;
+    --ring: 82 100% 36%;           /* Primary */
 
-    --radius: 0.875rem;
+    --radius: 2px;
 
-    /* 그라데이션 및 그림자 톤을 퍼플-Periwinkle 계열로 조화롭게 조정 */
-    --gradient-hero: linear-gradient(135deg, hsl(240 100% 70%) 0%, hsl(240 100% 80%) 50%, hsl(240 100% 90%) 100%);
-    --gradient-soft: linear-gradient(180deg, hsl(240 100% 98.5%) 0%, hsl(240 100% 94%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(240 100% 98%) 100%);
+    /* Removed gradients and shadows */
+    --gradient-hero: none;
+    --gradient-soft: none;
+    --gradient-card: none;
 
-    --shadow-sm: 0 1px 2px hsl(240 100% 75% / 0.08), 0 1px 3px hsl(240 100% 75% / 0.12);
-    --shadow-md: 0 4px 12px -2px hsl(240 100% 75% / 0.15), 0 2px 6px hsl(240 100% 75% / 0.1);
-    --shadow-lg: 0 24px 48px -16px hsl(240 100% 75% / 0.3), 0 8px 16px -8px hsl(240 100% 75% / 0.15);
-    --shadow-glow: 0 0 60px hsl(240 100% 75% / 0.35);
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-glow: none;
 
     --transition-base: cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 240 40% 98.5%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 100% 75%;
-    --sidebar-primary-foreground: 240 70% 12%;
-    --sidebar-accent: 240 100% 90%;
-    --sidebar-accent-foreground: 240 60% 20%;
-    --sidebar-border: 240 40% 90%;
-    --sidebar-ring: 240 100% 75%;
+    --sidebar-background: 0 0% 97%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 82 100% 36%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 97%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 80%;
+    --sidebar-ring: 82 100% 36%;
   }
 
   .dark {
-    /* 다크 모드용 Periwinkle 테마 */
-    --background: 240 45% 8%;         /* 깊은 다크 바이올렛 */
-    --foreground: 240 100% 97%;        /* 화사한 라벤더 화이트 */
-    --card: 240 30% 12%;
-    --card-foreground: 240 100% 97%;
-    --popover: 240 30% 12%;
-    --popover-foreground: 240 100% 97%;
-    --primary: 240 100% 80%;          /* 다크 모드 텍스트 대비 향상을 위한 밝은 Periwinkle */
-    --primary-foreground: 240 60% 10%;
-    --secondary: 240 30% 18%;
-    --secondary-foreground: 240 100% 90%;
-    --muted: 240 25% 15%;
-    --muted-foreground: 240 15% 70%;
-    --accent: 240 100% 75%;
-    --accent-foreground: 240 60% 10%;
-    --border: 240 25% 18%;
-    --input: 240 25% 18%;
-    --ring: 240 100% 80%;
+    --background: 0 0% 0%;         /* Surface-dark */
+    --foreground: 0 0% 100%;       /* On-dark */
+
+    --card: 0 0% 10%;              /* Surface-elevated */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 82 100% 36%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 46%;
+    --muted-foreground: 0 0% 46%;
+
+    --accent: 82 100% 36%;
+    --accent-foreground: 0 0% 0%;
+
+    --border: 0 0% 37%;            /* Hairline-strong #5e5e5e */
+    --input: 0 0% 37%;
+    --ring: 82 100% 36%;
   }
 }
 
 
 @layer base {
   * { @apply border-border; }
-  html { font-family: 'Manrope', system-ui, sans-serif; }
+  html { font-family: 'Inter', system-ui, sans-serif; }
   body { @apply bg-background text-foreground antialiased; font-feature-settings: "ss01", "cv11"; }
-  h1, h2, h3, h4, h5 { font-family: 'Sora', system-ui, sans-serif; letter-spacing: -0.02em; }
+  h1, h2, h3, h4, h5 { font-family: 'Inter', system-ui, sans-serif; letter-spacing: -0.02em; }
 }
 
 @layer utilities {
-  .gradient-hero { background: var(--gradient-hero); }
-  .gradient-soft { background: var(--gradient-soft); }
-  .gradient-card { background: var(--gradient-card); }
-  .shadow-soft { box-shadow: var(--shadow-md); }
-  .shadow-elevated { box-shadow: var(--shadow-lg); }
-  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .gradient-hero { background: none; }
+  .gradient-soft { background: none; }
+  .gradient-card { background: none; }
+  .shadow-soft { box-shadow: none; }
+  .shadow-elevated { box-shadow: none; }
+  .shadow-glow { box-shadow: none; }
   .text-balance { text-wrap: balance; }
 }

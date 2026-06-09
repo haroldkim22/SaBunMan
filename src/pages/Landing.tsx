@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion } from "framer-motion";
-import { Camera, MapPin, Hash, MessageCircle, ArrowRight, Sparkles } from "lucide-react";
+import { Camera, MapPin, Hash, MessageCircle, ArrowRight } from "lucide-react";
 
 const features = [
   { icon: Camera, title: "사진 한 장으로 등록", desc: "주운 분실물을 사진과 함께 빠르게 게시" },
@@ -16,104 +15,101 @@ const Landing = () => {
   const { user } = useAuth();
   return (
     <AppLayout>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 gradient-soft" />
-        <div className="absolute -top-40 -right-40 -z-10 h-[500px] w-[500px] rounded-full bg-primary-glow/20 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 -z-10 h-[400px] w-[400px] rounded-full bg-primary/10 blur-3xl" />
-
-        <div className="container py-20 md:py-32">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 backdrop-blur px-4 py-1.5 text-xs font-medium mb-6 shadow-sm">
-              <Sparkles className="h-3 w-3 text-primary-glow" />
-              SASA 학생·선생님을 위한 분실물 플랫폼
-            </div>
-            <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-balance mb-6">
+      {/* Hero Chapter */}
+      <section className="bg-black py-20 px-12 relative overflow-hidden">
+        <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="z-10 text-white max-w-xl">
+            <h1 className="text-[48px] font-bold leading-[1.25] mb-6">
               사사의 분실물,<br />
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary-glow bg-clip-text text-transparent">
-                4분만에 찾는다.
-              </span>
+              4분만에 찾는다.
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 text-balance max-w-2xl mx-auto">
-              리로스쿨 분실물 게시판이 답답했다면. 사진, 지도, 해시태그로
-              <br className="hidden md:inline" /> 누구나 쉽게 등록하고 한눈에 찾을 수 있도록.
+            <p className="text-[22px] font-normal leading-[1.75] text-white/70 mb-10">
+              리로스쿨 분실물 게시판이 답답했다면. 사진, 지도, 해시태그로 누구나 쉽게 등록하고 한눈에 찾을 수 있도록.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild size="lg" className="gradient-hero text-primary-foreground border-0 hover:opacity-90 shadow-elevated">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button asChild className="bg-[#76b900] text-black hover:bg-[#5a8d00] rounded-sm font-bold text-[18px] px-6 h-12 border-none">
                 <Link to={user ? "/feed" : "/auth?mode=signup"}>
-                  지금 시작하기 <ArrowRight className="ml-1 h-4 w-4" />
+                  지금 시작하기
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-black rounded-sm font-bold text-[18px] px-6 h-12">
                 <Link to={user ? "/map" : "/auth"}>지도 둘러보기</Link>
               </Button>
             </div>
-          </motion.div>
-
-          {/* Mock card preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-16 max-w-4xl mx-auto"
-          >
-            <div className="rounded-2xl border border-border bg-card shadow-elevated overflow-hidden">
-              <div className="grid md:grid-cols-3 gap-0">
-                {[
-                  { tag: "주웠어요", color: "bg-success", title: "검정 에어팟 프로", loc: "3층 화학실 앞" },
-                  { tag: "주웠어요", color: "bg-success", title: "파란색 우산", loc: "1층 현관" },
-                  { tag: "잃어버렸어요", color: "bg-warning", title: "갈색 가죽 지갑", loc: "2층 어딘가" },
-                ].map((c, i) => (
-                  <div key={i} className="p-5 border-r border-border last:border-r-0">
-                    <span className={`inline-block ${c.color} text-white text-[10px] font-bold px-2 py-0.5 rounded`}>{c.tag}</span>
-                    <div className="mt-3 font-display font-semibold">{c.title}</div>
-                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><MapPin className="h-3 w-3" />{c.loc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          </div>
+          {/* Mockup / Image area */}
+          <div className="hidden lg:block h-[400px] border border-[#5e5e5e] bg-[#1a1a1a] relative">
+             <div className="absolute top-0 left-0 w-3 h-3 bg-[#76b900]" />
+             <div className="w-full h-full flex items-center justify-center text-[#5e5e5e] font-bold tracking-widest uppercase">
+               System Visualization
+             </div>
+          </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="container py-20">
-        <div className="text-center mb-12">
-          <div className="text-xs font-bold tracking-wider text-primary-glow mb-2">CORE FEATURES</div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold">우리 학교만을 위한 핵심 기능</h2>
+      {/* Feature Grid Chapter */}
+      <section className="container mx-auto py-16 px-12">
+        <div className="mb-12">
+          <h2 className="text-[36px] font-bold leading-[1.25] text-black">우리 학교만을 위한 핵심 기능</h2>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((f, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className="group rounded-2xl border border-border bg-card p-6 hover:shadow-elevated hover:-translate-y-1 transition-all duration-300"
+              className="relative rounded-sm border border-[#cccccc] bg-white p-8 group"
             >
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors mb-4">
-                <f.icon className="h-5 w-5" />
+              <div className="absolute top-0 left-0 w-3 h-3 bg-[#76b900]" />
+              <div className="text-[#76b900] mb-6">
+                <f.icon className="h-6 w-6" />
               </div>
-              <h3 className="font-display font-semibold mb-1">{f.title}</h3>
-              <p className="text-sm text-muted-foreground">{f.desc}</p>
-            </motion.div>
+              <h3 className="text-[20px] font-bold leading-[1.25] mb-2">{f.title}</h3>
+              <p className="text-[16px] leading-[1.5] text-[#1a1a1a]">{f.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="container pb-24">
-        <div className="rounded-3xl gradient-hero p-10 md:p-16 text-center text-primary-foreground shadow-elevated overflow-hidden relative">
-          <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: "radial-gradient(circle at 20% 30%, white 1px, transparent 1px), radial-gradient(circle at 80% 70%, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }} />
-          <h2 className="relative font-display text-3xl md:text-5xl font-bold mb-4">잃어버린 물건, 같이 찾아요.</h2>
-          <p className="relative text-primary-foreground/80 mb-8 max-w-xl mx-auto">SASA 계정으로 로그인하고 첫 게시물을 등록해보세요.</p>
-          <Button asChild size="lg" variant="secondary" className="relative">
-            <Link to={user ? "/feed" : "/auth?mode=signup"}>피드로 이동 <ArrowRight className="ml-1 h-4 w-4" /></Link>
+      {/* Preview Chapter */}
+      <section className="bg-[#f7f7f7] py-16 px-12 border-t border-b border-[#cccccc]">
+        <div className="container mx-auto">
+          <div className="mb-12">
+            <h2 className="text-[36px] font-bold leading-[1.25] text-black">최근 분실물 현황</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { tag: "주웠어요", title: "검정 에어팟 프로", loc: "3층 화학실 앞" },
+              { tag: "주웠어요", title: "파란색 우산", loc: "1층 현관" },
+              { tag: "잃어버렸어요", title: "갈색 가죽 지갑", loc: "2층 어딘가" },
+            ].map((c, i) => (
+              <div key={i} className="relative rounded-sm border border-[#cccccc] bg-white p-6">
+                <div className="absolute top-0 right-0 w-3 h-3 bg-[#76b900]" />
+                <span className="inline-block bg-[#f7f7f7] text-[#1a1a1a] text-[14px] font-bold px-2.5 py-1 rounded-sm mb-4 border border-[#cccccc]">
+                  {c.tag}
+                </span>
+                <div className="text-[17px] font-bold leading-[1.47] mb-2">{c.title}</div>
+                <div className="text-[15px] text-[#757575] flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />{c.loc}
+                </div>
+                <div className="mt-6 flex justify-end">
+                   <div className="text-[#76b900] text-[15px] font-bold uppercase cursor-pointer hover:underline flex items-center">
+                     Read More <ArrowRight className="ml-1 h-4 w-4" />
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Strip Chapter */}
+      <section className="bg-black py-16 px-12">
+        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h2 className="text-[24px] font-bold leading-[1.25] text-white mb-2">잃어버린 물건, 같이 찾아요.</h2>
+            <p className="text-[16px] text-white/70">SASA 계정으로 로그인하고 첫 게시물을 등록해보세요.</p>
+          </div>
+          <Button asChild className="bg-[#76b900] text-black hover:bg-[#5a8d00] rounded-sm font-bold text-[18px] px-8 h-12 border-none">
+            <Link to={user ? "/feed" : "/auth?mode=signup"}>피드로 이동</Link>
           </Button>
         </div>
       </section>
@@ -122,3 +118,4 @@ const Landing = () => {
 };
 
 export default Landing;
+

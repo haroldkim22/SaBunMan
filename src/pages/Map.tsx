@@ -32,16 +32,16 @@ const Map = () => {
 
   return (
     <AppLayout>
-      <div className="container py-8">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+      <div className="container mx-auto py-12 px-12">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold">학교 지도</h1>
-            <p className="text-muted-foreground mt-1">미해결 분실물 위치를 한눈에 · 마커를 클릭하세요</p>
+            <h1 className="text-[36px] font-bold leading-[1.25] text-black">학교 지도</h1>
+            <p className="text-[16px] text-[#757575] mt-2">미해결 분실물 위치를 한눈에 · 마커를 클릭하세요</p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-3 flex-wrap">
             {(["all", "found", "lost"] as const).map((f) => (
               <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
-                className={filter === f ? "gradient-hero text-primary-foreground border-0" : ""}
+                className={`h-10 px-4 rounded-sm font-bold text-[14.4px] ${filter === f ? "bg-black text-white border-black" : "bg-white text-black border-[#cccccc] hover:bg-[#f7f7f7]"}`}
                 onClick={() => setFilter(f)}>
                 {f === "all" ? "전체" : f === "found" ? "주웠어요" : "잃어버렸어요"}
               </Button>
@@ -49,28 +49,34 @@ const Map = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-[200px_1fr] gap-6">
-          <div className="space-y-2">
-            <div className="text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
+        <div className="grid lg:grid-cols-[240px_1fr] gap-8 items-start">
+          <div className="space-y-3">
+            <div className="text-[12px] font-bold text-[#5e5e5e] tracking-wider mb-4 border-b border-[#cccccc] pb-2 uppercase">
+              Select Floor
+            </div>
             {[5, 4, 3, 2, 1].map((f) => (
               <button key={f} onClick={() => setFloor(f)}
-                className={`w-full text-left p-4 rounded-xl border transition-all ${
-                  floor === f ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/50"
+                className={`w-full text-left p-5 rounded-sm border transition-all ${
+                  floor === f ? "border-[#76b900] bg-black text-white" : "border-[#cccccc] bg-white hover:border-black"
                 }`}>
-                <div className="font-display text-2xl font-bold">{f}F</div>
-                <div className={`text-xs mt-0.5 ${floor === f ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                  {markers.filter((m) => m.floor === f).length}건
+                <div className="text-[24px] font-bold leading-[1.25]">{f}F</div>
+                <div className={`text-[12px] mt-1 font-bold ${floor === f ? "text-[#76b900]" : "text-[#757575]"}`}>
+                  {markers.filter((m) => m.floor === f).length}건의 분실물
                 </div>
               </button>
             ))}
           </div>
 
-          <div>
+          <div className="border border-[#cccccc] rounded-sm p-6 bg-white relative">
+            <div className="absolute top-0 right-0 w-3 h-3 bg-[#76b900] z-10" />
             <FloorMap floor={floor} markers={visible} onMarkerClick={(id) => nav(`/post/${id}`)} />
-            <div className="mt-4 flex gap-4 text-sm">
-              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-success" />주웠어요</div>
-              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-warning" />잃어버렸어요</div>
-              <Badge variant="secondary" className="ml-auto">{visible.length}개 표시중</Badge>
+            
+            <div className="mt-8 pt-6 border-t border-[#cccccc] flex gap-6 text-[14px] font-bold text-black">
+              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-none bg-[#76b900]" />주웠어요</div>
+              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-none bg-black" />잃어버렸어요</div>
+              <div className="ml-auto bg-[#f7f7f7] border border-[#cccccc] px-3 py-1 rounded-sm text-[12px] text-[#5e5e5e]">
+                {visible.length}개 표시중
+              </div>
             </div>
           </div>
         </div>
