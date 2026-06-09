@@ -168,15 +168,25 @@ const PostDetail = () => {
               </div>
             )}
 
-            {/* 위치 카드: 모바일에서도 자연스러운 내장형 블록 처리 */}
+            {/* 지도 */}
             <div className="rounded-xl border border-border bg-card p-4 shadow-soft">
               <div className="flex items-center gap-1.5 text-xs md:text-sm font-semibold text-foreground mb-3">
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>{post.floor ? `${post.floor}층` : "층 미지정"} {post.location_label && `· ${post.location_label}`}</span>
               </div>
               {post.floor && post.location_x != null && post.location_y != null && (
-                <div className="aspect-[4/3] sm:aspect-video md:aspect-square rounded-lg overflow-hidden border border-border/60">
-                  <FloorMap floor={post.floor} selected={{ x: post.location_x, y: post.location_y }} />
+                <div className="w-full h-auto max-h-[260px] md:max-h-[300px] rounded-lg overflow-hidden border border-border/60">
+                  <FloorMap 
+                    floor={post.floor} 
+                    markers={[{ 
+                      id: post.id, 
+                      x: post.location_x, 
+                      y: post.location_y, 
+                      type: post.type, 
+                      title: post.title, 
+                      floor: post.floor 
+                    }]} 
+                  />
                 </div>
               )}
             </div>
