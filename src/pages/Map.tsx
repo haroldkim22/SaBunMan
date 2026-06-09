@@ -1,93 +1,163 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/AppLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Button } from "@/components/ui/button";
-import { FloorMap } from "@/components/FloorMap";
-import { Badge } from "@/components/ui/badge";
+import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
-type Marker = { id: string; x: number; y: number; type: "found" | "lost"; title: string; floor: number };
-
-const Map = () => {
-  const [floor, setFloor] = useState(1);
-  const [markers, setMarkers] = useState<Marker[]>([]);
-  const [filter, setFilter] = useState<"all" | "found" | "lost">("all");
-  const nav = useNavigate();
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("posts")
-        .select("id, type, title, floor, location_x, location_y, status")
-        .eq("status", "open")
-        .not("floor", "is", null)
-        .not("location_x", "is", null);
-      setMarkers((data ?? []).map((p: any) => ({
-        id: p.id, x: p.location_x, y: p.location_y, type: p.type, title: p.title, floor: p.floor,
-      })));
-    })();
-  }, []);
-
-  const visible = markers.filter((m) => m.floor === floor && (filter === "all" || m.type === filter));
-
-  return (
-    <AppLayout>
-      <div className="container py-8">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold">학교 지도</h1>
-            <p className="text-muted-foreground mt-1">미해결 분실물 위치를 한눈에 · 마커를 클릭하세요</p>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {(["all", "found", "lost"] as const).map((f) => (
-              <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
-                className={filter === f ? "gradient-hero text-primary-foreground border-0" : ""}
-                onClick={() => setFilter(f)}>
-                {f === "all" ? "전체" : f === "found" ? "주웠어요" : "잃어버렸어요"}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-[200px_1fr] gap-6">
-          <div className="space-y-2">
-            <div className="text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
-            {[5, 4, 3, 2, 1].map((f) => (
-              <button key={f} onClick={() => setFloor(f)}
-                className={`w-full text-left p-4 rounded-xl border transition-all ${floor === f ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/50"
-                  }`}>
-                <div className="font-display text-2xl font-bold">{f}F</div>
-                <div className={`text-xs mt-0.5 ${floor === f ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                  {markers.filter((m) => m.floor === f).length}건
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div>
-            <div
-              className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-soft"
-              style={{ height: "min(65vh, 720px)", maxHeight: "calc(100vh - 240px)" }}
-            >
-              <div className="h-full w-full">
-                <FloorMap
-                  className="h-full w-full"
-                  floor={floor}
-                  markers={visible}
-                  onMarkerClick={(id) => nav(`/post/${id}`)}
-                />
-              </div>
-            </div>
-            <div className="mt-4 flex gap-4 text-sm">
-              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-success" />주웠어요</div>
-              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-warning" />잃어버렸어요</div>
-              <Badge variant="secondary" className="ml-auto">{visible.length}개 표시중</Badge>
-            </div>
-          </div>
-        </div>
-      </div>
-    </AppLayout>
-  );
+type Props = {
+  floor: number;
+  selected?: { x: number; y: number } | null;
+  markers?: Array<{ id: string; x: number; y: number; type: "found" | "lost"; title: string }>;
+  onClick?: (x: number, y: number) => void;
+  onMarkerClick?: (id: string) => void;
+  className?: string;
+  zoomable?: boolean;
 };
 
-export default Map;
+// 세종과학예술영재학교 배치도 SVG (public/floors)
+// 원본 viewBox: 1190.67 x 841.89
+const VB_W = 1190.67;
+const VB_H = 841.89;
+
+const floorSrc = (floor: number) => `/floors/floor-${Math.min(5, Math.max(1, floor))}.svg`;
+
+export const FloorMap = ({
+  floor, selected, markers = [], onClick, onMarkerClick, className, zoomable = true,
+}: Props) => {
+  const [hover, setHover] = useState<{ x: number; y: number } | null>(null);
+
+  const toNorm = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = (e.target as SVGElement).closest("svg")!.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    return { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
+  };
+
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!onClick) return;
+    const { x, y } = toNorm(e);
+    onClick(x, y);
+  };
+
+  // 핵심 수정 1: 지도가 깨지지 않고 반응형으로 크기가 조절되는 컨테이너 스타일링
+  const content = (
+    <div
+      style={{
+        width: "100%",
+        height: "auto",
+        maxHeight: "100%",
+        aspectRatio: `${VB_W} / ${VB_H}`,
+      }}
+      className="relative"
+    >
+      <svg
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        className={`w-full h-full ${onClick ? "cursor-crosshair" : ""}`}
+        onClick={handleClick}
+        onMouseMove={(e) => setHover(toNorm(e))}
+        onMouseLeave={() => setHover(null)}
+      >
+        {/* 핵심 수정 2: 배경 이미지를 SVG 내부 요소로 삽입하여 마커와 완벽 동기화 */}
+        <image
+          href={floorSrc(floor)}
+          width={VB_W}
+          height={VB_H}
+          className="select-none pointer-events-none"
+        />
+
+        {/* 인터랙션 오버레이 가이드라인 */}
+        {hover && onClick && (
+          <g style={{ pointerEvents: "none" }} opacity="0.5">
+            <line x1={hover.x * VB_W} y1="0" x2={hover.x * VB_W} y2={VB_H}
+              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" />
+            <line x1="0" y1={hover.y * VB_H} x2={VB_W} y2={hover.y * VB_H}
+              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" />
+          </g>
+        )}
+
+        {/* 마커 렌더링 */}
+        {markers.map((m) => (
+          <g key={m.id} style={{ cursor: "pointer" }}
+            onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}>
+            <circle cx={m.x * VB_W} cy={m.y * VB_H} r="22"
+              fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
+              opacity="0.25" />
+            <circle cx={m.x * VB_W} cy={m.y * VB_H} r="11"
+              fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
+              stroke="white" strokeWidth="3">
+              <animate attributeName="r" values="11;15;11" dur="1.5" repeatCount="indefinite" />
+            </circle>
+            <title>{m.title}</title>
+          </g>
+        ))}
+
+        {/* 선택된 위치 핀 */}
+        {selected && (
+          <g style={{ pointerEvents: "none" }}>
+            <circle cx={selected.x * VB_W} cy={selected.y * VB_H} r="28"
+              fill="hsl(var(--primary))" opacity="0.2" />
+            <circle cx={selected.x * VB_W} cy={selected.y * VB_H} r="14"
+              fill="hsl(var(--primary))" stroke="white" strokeWidth="4" />
+          </g>
+        )}
+      </svg>
+    </div>
+  );
+
+  if (!zoomable) {
+    return (
+      <div
+        className={`relative rounded-2xl border border-border bg-card overflow-hidden flex items-center justify-center ${className ?? ""}`}
+        style={{ width: "100%", height: "55vh" }}
+      >
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
+      style={{ width: "100%", height: "55vh" }}
+    >
+      <TransformWrapper
+        initialScale={1}
+        minScale={1}
+        maxScale={7}
+        wheel={{ step: 0.05, smooth: true }}
+        doubleClick={{ disabled: true }}
+        panning={{ disabled: false, velocityDisabled: true }}
+      >
+        {({ zoomIn, zoomOut, resetTransform }) => (
+          <>
+            {/* 핵심 수정 3: contentClass에 flex와 중앙 정렬을 주어 지도가 화면 한가운데 예쁘게 배치되도록 함 */}
+            <TransformComponent
+              wrapperClass="!w-full !h-full"
+              contentClass="!w-full !h-full flex items-center justify-center"
+            >
+              {content}
+            </TransformComponent>
+            
+            {/* 컨트롤 버튼 디자인 */}
+            <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-10">
+              <Button type="button" size="icon" variant="secondary"
+                className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
+                onClick={(e) => { e.stopPropagation(); zoomIn(); }}>
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+              <Button type="button" size="icon" variant="secondary"
+                className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
+                onClick={(e) => { e.stopPropagation(); zoomOut(); }}>
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+              <Button type="button" size="icon" variant="secondary"
+                className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
+                onClick={(e) => { e.stopPropagation(); resetTransform(); }}>
+                <Maximize2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
+      </TransformWrapper>
+    </div>
+  );
+};
