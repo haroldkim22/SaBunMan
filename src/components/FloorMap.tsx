@@ -22,6 +22,7 @@ export const FloorMap = ({
   floor, selected, markers = [], onClick, onMarkerClick, className, zoomable = true,
 }: Props) => {
   const [hover, setHover] = useState<{ x: number; y: number } | null>(null);
+  const [scale, setScale] = useState(1);
 
   const toNorm = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = (e.target as SVGElement).closest("svg")!.getBoundingClientRect();
@@ -36,61 +37,60 @@ export const FloorMap = ({
     onClick(x, y);
   };
 
-  // 핵심 수정 1: 지도가 깨지지 않고 반응형으로 크기가 조절되는 컨테이너 스타일링
   const content = (
-    <div
-      style={{
-        width: "100%",
-        height: "auto",
-        maxHeight: "100%",
-        aspectRatio: `${VB_W} / ${VB_H}`,
-      }}
-      className="relative"
-    >
+    <div className="relative w-full" style={{ aspectRatio: `${VB_W} / ${VB_H}`, maxHeight: "80vh" }}>
+      {/* 배경 배치도 이미지 */}
+      <img
+        src={floorSrc(floor)}
+        alt={`${floor}층 배치도`}
+        className="absolute inset-0 w-full h-full select-none pointer-events-none"
+        draggable={false}
+      />
+
       <svg
         viewBox={`0 0 ${VB_W} ${VB_H}`}
-        className={`w-full h-full ${onClick ? "cursor-crosshair" : ""}`}
+        className={`absolute inset-0 w-full h-full ${onClick ? "cursor-crosshair" : ""}`}
         onClick={handleClick}
         onMouseMove={(e) => setHover(toNorm(e))}
         onMouseLeave={() => setHover(null)}
+        preserveAspectRatio="xMidYMid meet"
       >
-        <image
-          href={floorSrc(floor)}
-          width={VB_W}
-          height={VB_H}
-          className="select-none pointer-events-none"
-        />
-
         {hover && onClick && (
           <g style={{ pointerEvents: "none" }} opacity="0.5">
             <line x1={hover.x * VB_W} y1="0" x2={hover.x * VB_W} y2={VB_H}
-              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" />
+              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" vectorEffect="non-scaling-stroke" />
             <line x1="0" y1={hover.y * VB_H} x2={VB_W} y2={hover.y * VB_H}
-              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" />
+              stroke="hsl(var(--primary))" strokeWidth="1.5" strokeDasharray="6 6" vectorEffect="non-scaling-stroke" />
           </g>
         )}
 
-        {/* 마커 */}
         {markers.map((m) => (
-          <g key={m.id} style={{ cursor: "pointer" }}
-            onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}>
-            <circle cx={m.x * VB_W} cy={m.y * VB_H} r="22"
+          <g
+            key={m.id}
+            style={{ cursor: "pointer" }}
+            transform={`translate(${m.x * VB_W}, ${m.y * VB_H}) scale(${1 / scale})`}
+            onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}
+          >
+            <circle cx="0" cy="0" r="22"
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
               opacity="0.25" />
-            <circle cx={m.x * VB_W} cy={m.y * VB_H} r="11"
+            <circle cx="0" cy="0" r="11"
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
               stroke="white" strokeWidth="3">
-              <animate attributeName="r" values="11;15;11" dur="1.5" repeatCount="indefinite" />
+              <animate attributeName="r" values="11;15;11" dur="0.5" repeatCount="indefinite" />
             </circle>
             <title>{m.title}</title>
           </g>
         ))}
 
         {selected && (
-          <g style={{ pointerEvents: "none" }}>
-            <circle cx={selected.x * VB_W} cy={selected.y * VB_H} r="28"
+          <g
+            style={{ pointerEvents: "none" }}
+            transform={`translate(${selected.x * VB_W}, ${selected.y * VB_H}) scale(${1 / scale})`}
+          >
+            <circle cx="0" cy="0" r="28"
               fill="hsl(var(--primary))" opacity="0.2" />
-            <circle cx={selected.x * VB_W} cy={selected.y * VB_H} r="14"
+            <circle cx="0" cy="0" r="14"
               fill="hsl(var(--primary))" stroke="white" strokeWidth="4" />
           </g>
         )}
@@ -101,8 +101,8 @@ export const FloorMap = ({
   if (!zoomable) {
     return (
       <div
-        className={`relative rounded-2xl border border-border bg-card overflow-hidden flex items-center justify-center ${className ?? ""}`}
-        style={{ width: "100%", height: "70vh" }}
+        className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
+        style={{ width: "100%", height: "55vh" }}
       >
         {content}
       </div>
@@ -112,26 +112,26 @@ export const FloorMap = ({
   return (
     <div
       className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
-      style={{ width: "100%", height: "70vh" }}
+      style={{ width: "100%", height: "55vh" }}
     >
       <TransformWrapper
         initialScale={1}
         minScale={1}
         maxScale={7}
-        wheel={{ step: 0.05, smooth: true }}
+        wheel={{ step: 0.01, smooth: true }}
         doubleClick={{ disabled: true }}
         panning={{ disabled: false, velocityDisabled: true }}
+        animationDuration={30}
+        onTransformed={(instance) => setScale(instance.state.scale)}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
-            {/* 가운데 정렬 */}
             <TransformComponent
               wrapperClass="!w-full !h-full"
-              contentClass="!w-full !h-full flex items-center justify-center"
+              contentClass="!w-full !h-full"
             >
               {content}
             </TransformComponent>
-
             <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-10">
               <Button type="button" size="icon" variant="secondary"
                 className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
