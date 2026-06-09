@@ -108,7 +108,7 @@ export const FloorMap = ({
         initialScale={1}
         minScale={1}
         maxScale={5}
-        wheel={{ step: 0.05 }}
+        wheel={{ step: 0.01 }}
         doubleClick={{ disabled: true }}
         panning={{ disabled: false, velocityDisabled: true }}
       >
