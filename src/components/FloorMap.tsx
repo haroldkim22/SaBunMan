@@ -28,7 +28,7 @@ export const FloorMap = ({
     const svgEl = (e.target as SVGElement).closest("svg")!;
     const rect = svgEl.getBoundingClientRect();
     
-    // 터치 이벤트와 마우스 이벤트 모두 대응하도록 클라이언트 좌표 계산
+    // 터치 이벤트와 마우스 이벤트 모두
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
@@ -39,7 +39,6 @@ export const FloorMap = ({
 
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!onClick) return;
-    // 마커 자체를 클릭했을 때는 맵 클릭 이벤트가 실행되지 않도록 방어
     if ((e.target as SVGElement).classList.contains('touch-target')) return;
     const { x, y } = toNorm(e);
     onClick(x, y);
@@ -85,8 +84,7 @@ export const FloorMap = ({
             transform={`translate(${m.x * VB_W}, ${m.y * VB_H}) scale(${1 / scale})`}
             onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}
           >
-            {/* 💡 최적화 포인트 3: 투명 터치 패딩 (핵심) */}
-            {/* 눈에는 안 보이지만 지름 70px 크기의 거대한 클릭 영역을 생성하여 모바일 오클릭을 완벽하게 해결합니다. */}
+            {/*투명 패딩*/}
             <circle 
               cx="0" 
               cy="0" 
@@ -96,7 +94,6 @@ export const FloorMap = ({
               style={{ pointerEvents: "all" }} 
             />
 
-            {/* 시각적 마커 요소들 */}
             <circle cx="0" cy="0" r="22"
               fill={m.type === "found" ? "hsl(var(--success))" : "hsl(var(--warning))"}
               opacity="0.25" style={{ pointerEvents: "none" }} />
@@ -144,8 +141,7 @@ export const FloorMap = ({
         maxScale={6}
         wheel={{ step: 0.01, smooth: true }}
         doubleClick={{ disabled: true }}
-        // 💡 최적화 포인트 4: 모바일 제스처 최적화
-        // 모바일에서 두 손가락 핀치 줌이 부드럽게 먹히도록 설정하되, 한 손가락 페이지 스크롤 시 맵 안에서 걸리지 않도록 밸런스 유지
+
         panning={{ disabled: false, velocityDisabled: true, rows: 1 }}
         onTransformed={(instance: any) => setScale(instance.state.scale)}
       >
@@ -158,7 +154,7 @@ export const FloorMap = ({
               {content}
             </TransformComponent>
             
-            {/* 우측 하단 컨트롤러: 모바일 터치를 위해 크기 및 여백 소폭 조정 */}
+            {/*모바일 터치 크기, 여백 조정 */}
             <div className="absolute bottom-3 right-3 flex flex-col gap-2 z-10">
               <Button type="button" size="icon" variant="secondary"
                 className="h-10 w-10 md:h-9 md:w-9 shadow-soft bg-background/95 backdrop-blur border border-border"

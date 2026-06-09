@@ -68,7 +68,7 @@ const Feed = () => {
   return (
     <AppLayout>
       <section className="border-b border-border/60 bg-gradient-to-b from-muted/40 to-transparent">
-        {/* 모바일 화면 패딩 슬림화 (px-4), PC 패딩 유지 */}
+        {/*모바일 화면 패딩 줄임*/}
         <div className="container py-8 px-4 md:px-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
@@ -87,7 +87,7 @@ const Feed = () => {
                 placeholder="제목, 설명, 해시태그, 위치로 검색..."
                 className="pl-9 h-11 bg-card" />
             </div>
-            {/* 필터 버튼 모바일 가로 스크롤 처리 및 글자 찌그러짐 방지 */}
+          
             <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none snap-x">
               {(["all", "found", "lost", "open"] as const).map((f) => (
                 <Button key={f} variant={filter === f ? "default" : "outline"}
@@ -131,7 +131,7 @@ const Feed = () => {
             <Button asChild><Link to="/new">새 게시물 등록</Link></Button>
           </div>
         ) : (
-          /* 기본 모바일 1열 -> 태블릿 2열(md:) -> PC 3열(lg:) 완벽 대응 */
+          /*모바일 1열, 태블릿 2열(md:), PC 3열(lg:)*/
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((p, i) => (
               <motion.div key={p.id}

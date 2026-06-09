@@ -50,11 +50,9 @@ const Map = () => {
           </div>
         </div>
 
-        {/* 메인 그리드 레이아웃: PC 비율인 [200px_1fr]과 gap-6 완벽 복구 */}
         <div className="grid lg:grid-cols-[200px_1fr] gap-6">
           
-          {/* 층수 선택 버튼 영역 */}
-          {/* PC에서는 원래대로 세로 배치(lg:flex-col), 모바일에서만 가로 스크롤바로 자동 전환 */}
+          {/* 층수 선택: PC에서는 원래대로 세로 배치(lg:flex-col), 모바일에서만 가로 스크롤바로 자동 전환 */}
           <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none snap-x">
             <div className="hidden lg:block text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
             {[5, 4, 3, 2, 1].map((f) => (
@@ -73,11 +71,7 @@ const Map = () => {
             ))}
           </div>
 
-          {/* 지도 컨테이너 영역 */}
           <div>
-            {/* 💡 PC 스크린샷의 비율을 유지하기 위해 Tailwind의 반응형 임의값 클래스로 분리했습니다. */}
-            {/* 기본(모바일): 적당한 높이(h-[45vh]) 유지하여 스크롤 갇힘 방지 */}
-            {/* lg(PC): 기존 소스코드의 원래 비율인 h-[min(65vh,720px)] 및 max-h-[calc(100vh-240px)] 완벽 복원 */}
             <div
               className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-soft h-[45vh] min-h-[360px] lg:h-[min(65vh,720px)] lg:max-h-[calc(100vh-240px)]"
             >

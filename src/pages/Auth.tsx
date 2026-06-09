@@ -78,7 +78,7 @@ const Auth = () => {
           </Link>
 
           <h1 className="font-display text-3xl font-bold mb-2">
-            안녕하세요
+            다시 만나서 반가워요
           </h1>
           <p className="text-muted-foreground mb-8">
             SASA 구글 계정으로 로그인해 주세요
