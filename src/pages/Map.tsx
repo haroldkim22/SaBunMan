@@ -52,7 +52,7 @@ const Map = () => {
 
         <div className="grid lg:grid-cols-[200px_1fr] gap-6">
           
-          {/* 층수 선택: PC에서는 원래대로 세로 배치(lg:flex-col), 모바일에서만 가로 스크롤바로 자동 전환 */}
+          {/* 층수 선택 */}
           <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none snap-x">
             <div className="hidden lg:block text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
             {[5, 4, 3, 2, 1].map((f) => (
@@ -72,8 +72,9 @@ const Map = () => {
           </div>
 
           <div>
+            {/* touch-none 클래스 추가 드래그/상하이동 시 브라우저 스크롤이 간섭하지 않도록 제어 */}
             <div
-              className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-soft h-[45vh] min-h-[360px] lg:h-[min(65vh,720px)] lg:max-h-[calc(100vh-240px)]"
+              className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-soft h-[45vh] min-h-[360px] lg:h-[min(65vh,720px)] lg:max-h-[calc(100vh-240px)] touch-none"
             >
               <div className="h-full w-full">
                 <FloorMap
