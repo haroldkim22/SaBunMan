@@ -68,30 +68,30 @@ const Feed = () => {
   return (
     <AppLayout>
       <section className="border-b border-border/60 bg-gradient-to-b from-muted/40 to-transparent">
-        <div className="container py-6 md:py-8 px-4 md:px-8">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-4">
+        <div className="container py-8">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <h1 className="font-display text-2xl md:text-4xl font-bold">분실물 피드</h1>
-              <p className="text-xs md:text-sm text-muted-foreground mt-0.5 md:mt-1">최신 등록순 // 총 {posts.length}건</p>
+              <h1 className="font-display text-3xl md:text-4xl font-bold">분실물 피드</h1>
+              <p className="text-muted-foreground mt-1">최신 등록순 // 총 {posts.length}건</p>
             </div>
-            <Button asChild className="gradient-hero text-primary-foreground border-0 shadow-soft w-full md:w-auto h-10 md:h-11 justify-center text-sm">
+            <Button asChild className="gradient-hero text-primary-foreground border-0 shadow-soft">
               <Link to="/new"><Plus className="h-4 w-4 mr-1" />새 게시물</Link>
             </Button>
           </div>
 
-          <div className="mt-4 md:mt-6 flex flex-col md:flex-row gap-2 md:gap-3">
+          <div className="mt-6 flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input value={q} onChange={(e) => setQ(e.target.value)}
-                placeholder="제목, 설명, 해시태그, 위치 검색..."
-                className="pl-9 h-10 md:h-11 bg-card text-sm" />
+                placeholder="제목, 설명, 해시태그, 위치로 검색..."
+                className="pl-9 h-11 bg-card" />
             </div>
-            <div className="flex gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none snap-x">
+            <div className="flex gap-2 overflow-x-auto">
               {(["all", "found", "lost", "open"] as const).map((f) => (
                 <Button key={f} variant={filter === f ? "default" : "outline"}
                   size="sm" onClick={() => setFilter(f)}
-                  className={`text-xs md:text-sm h-8 md:h-9 px-3 whitespace-nowrap snap-start ${filter === f ? "gradient-hero text-primary-foreground border-0" : ""}`}>
-                  <Filter className="h-3 w-3 mr-1 shrink-0" />
+                  className={filter === f ? "gradient-hero text-primary-foreground border-0" : ""}>
+                  <Filter className="h-3 w-3 mr-1" />
                   {f === "all" ? "전체" : f === "found" ? "주웠어요" : f === "lost" ? "잃어버렸어요" : "미해결"}
                 </Button>
               ))}
@@ -99,11 +99,11 @@ const Feed = () => {
           </div>
 
           {trendingTags.length > 0 && (
-            <div className="mt-3 flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none whitespace-nowrap">
-              <span className="text-[11px] md:text-xs font-medium text-muted-foreground shrink-0">추천 태그</span>
+            <div className="mt-4 flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-medium text-muted-foreground">실시간 태그</span>
               {trendingTags.map((t) => (
                 <button key={t} onClick={() => setQ(t)}
-                  className="text-[11px] md:text-xs px-2.5 py-0.5 md:py-1 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors shrink-0">
+                  className="text-xs px-2.5 py-1 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors">
                   #{t}
                 </button>
               ))}
@@ -112,88 +112,68 @@ const Feed = () => {
         </div>
       </section>
 
-      <section className="container py-6 md:py-8 px-4 md:px-8">
+      <section className="container py-8">
         {loading ? (
-          /* 모바일 로딩바도 2열 */
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="aspect-[4/5] sm:h-72 rounded-2xl bg-muted animate-pulse" />
+              <div key={i} className="h-72 rounded-2xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-4xl md:text-5xl mb-3">🔍</div>
-            <h3 className="font-display text-lg md:text-xl font-bold">아직 게시물이 없어요</h3>
-            <p className="text-xs md:text-sm text-muted-foreground mt-1 mb-6">
+            <div className="text-5xl mb-3">🔍</div>
+            <h3 className="font-display text-xl font-bold">아직 게시물이 없어요</h3>
+            <p className="text-muted-foreground mt-1 mb-6">
               {posts.length === 0 ? "첫 분실물을 등록해보세요." : "검색 조건을 바꿔보세요."}
             </p>
-            <Button asChild size="sm" className="md:size-default"><Link to="/new">새 게시물 등록</Link></Button>
+            <Button asChild><Link to="/new">새 게시물 등록</Link></Button>
           </div>
         ) : (
-          /* 모바일 격자 2열, 간격 gap-3 설정 */
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((p, i) => (
               <motion.div key={p.id}
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.03, 0.3) }}>
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.04, 0.4) }}>
                 <Link to={`/post/${p.id}`}>
-                  <Card className="overflow-hidden hover:shadow-elevated hover:-translate-y-0.5 transition-all duration-300 group h-full flex flex-col rounded-xl md:rounded-2xl">
-                    
-                    <div className="aspect-[4/3] bg-muted relative overflow-hidden shrink-0">
+                  <Card className="overflow-hidden hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 group h-full">
+                    <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                       {p.image_url ? (
                         <img src={p.image_url} alt={p.title} loading="lazy"
-                          className="h-full w-full object-cover group-hover:scale-103 transition-transform duration-500" />
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="h-full w-full grid place-items-center text-muted-foreground">
-                          <ImageOff className="h-7 w-7 md:h-10 md:w-10" />
+                          <ImageOff className="h-10 w-10" />
                         </div>
                       )}
-                      <div className="absolute top-2 left-2 md:top-3 md:left-3 flex gap-1">
-                        <Badge className={`${typeStyle[p.type]} border-0 font-bold text-[9px] md:text-xs px-1.5 py-0 md:px-2.5 md:py-0.5`}>
-                          {typeLabel[p.type]}
-                        </Badge>
+                      <div className="absolute top-3 left-3 flex gap-1.5">
+                        <Badge className={`${typeStyle[p.type]} border-0 font-bold`}>{typeLabel[p.type]}</Badge>
                         {p.status === "resolved" && (
-                          <Badge variant="secondary" className="bg-background/80 backdrop-blur text-[9px] md:text-xs px-1.5 py-0">해결완료</Badge>
+                          <Badge variant="secondary" className="bg-background/80 backdrop-blur">해결완료</Badge>
                         )}
                       </div>
                     </div>
-
-                    <div className="p-2.5 md:p-4 flex-1 flex flex-col justify-between gap-2">
-                      <div>
-                        <h3 className="font-display font-semibold leading-tight line-clamp-1 text-sm md:text-lg text-foreground">
-                          {p.title}
-                        </h3>
-                        {p.description && (
-                          <p className="text-[11px] md:text-sm text-muted-foreground mt-0.5 md:mt-1 line-clamp-1 md:line-clamp-2">
-                            {p.description}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between text-[10px] md:text-xs text-muted-foreground border-t border-border/40 pt-2 min-w-0">
-                          <div className="flex items-center gap-0.5 md:gap-1 min-w-0 flex-1">
-                            <MapPin className="h-2.5 w-2.5 md:h-3 md:w-3 shrink-0 text-primary" />
-                            <span className="truncate">{p.floor ? `${p.floor}F` : ""} {p.location_label ?? "미지정"}</span>
-                          </div>
-                          <span className="shrink-0 ml-1 opacity-80">
-                            {formatDistanceToNow(new Date(p.created_at), { locale: ko })} 전
-                          </span>
+                    <div className="p-4">
+                      <h3 className="font-display font-semibold leading-tight line-clamp-1">{p.title}</h3>
+                      {p.description && (
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</p>
+                      )}
+                      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {p.floor ? `${p.floor}F` : ""} {p.location_label ?? "위치 미지정"}
                         </div>
-
-                        {/* 해시태그 영역 줄이기 */}
-                        {p.tags.length > 0 && (
-                          <div className="mt-1.5 md:mt-3 flex gap-0.5 md:gap-1 flex-wrap">
-                            {p.tags.slice(0, 2).map((t) => (
-                              <span key={t} className="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded bg-muted truncate max-w-[70px] md:max-w-[100px] text-muted-foreground">
-                                #{t}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                        <span>{formatDistanceToNow(new Date(p.created_at), { locale: ko, addSuffix: true })}</span>
                       </div>
+                      {p.tags.length > 0 && (
+                        <div className="mt-3 flex gap-1 flex-wrap">
+                          {p.tags.slice(0, 3).map((t) => (
+                            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-muted">
+                              <Hash className="h-2.5 w-2.5 inline -mt-0.5" />{t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-
                   </Card>
                 </Link>
               </motion.div>
