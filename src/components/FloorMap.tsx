@@ -96,7 +96,7 @@ export const FloorMap = ({
 
   if (!zoomable) {
     return (
-      <div className={`relative rounded-2xl border border-border bg-card overflow-auto ${className ?? ""}`} style={{ maxWidth: "100vw", maxHeight: "80vh" }}>
+      <div className={`relative rounded-2xl border border-border bg-card overflow-auto ${className ?? ""}`} style={{ maxWidth: "100%", maxHeight: "60vh" }}>
         {content}
       </div>
     );
