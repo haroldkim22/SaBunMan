@@ -13,8 +13,6 @@ type Props = {
   zoomable?: boolean;
 };
 
-// 세종과학예술영재학교 배치도 SVG (public/floors)
-// 원본 viewBox: 1190.67 x 841.89
 const VB_W = 1190.67;
 const VB_H = 841.89;
 
@@ -56,7 +54,6 @@ export const FloorMap = ({
         onMouseMove={(e) => setHover(toNorm(e))}
         onMouseLeave={() => setHover(null)}
       >
-        {/* 핵심 수정 2: 배경 이미지를 SVG 내부 요소로 삽입하여 마커와 완벽 동기화 */}
         <image
           href={floorSrc(floor)}
           width={VB_W}
@@ -64,7 +61,6 @@ export const FloorMap = ({
           className="select-none pointer-events-none"
         />
 
-        {/* 인터랙션 오버레이 가이드라인 */}
         {hover && onClick && (
           <g style={{ pointerEvents: "none" }} opacity="0.5">
             <line x1={hover.x * VB_W} y1="0" x2={hover.x * VB_W} y2={VB_H}
@@ -74,7 +70,7 @@ export const FloorMap = ({
           </g>
         )}
 
-        {/* 마커 렌더링 */}
+        {/* 마커 */}
         {markers.map((m) => (
           <g key={m.id} style={{ cursor: "pointer" }}
             onClick={(e) => { e.stopPropagation(); onMarkerClick?.(m.id); }}>
@@ -90,7 +86,6 @@ export const FloorMap = ({
           </g>
         ))}
 
-        {/* 선택된 위치 핀 */}
         {selected && (
           <g style={{ pointerEvents: "none" }}>
             <circle cx={selected.x * VB_W} cy={selected.y * VB_H} r="28"
@@ -107,7 +102,7 @@ export const FloorMap = ({
     return (
       <div
         className={`relative rounded-2xl border border-border bg-card overflow-hidden flex items-center justify-center ${className ?? ""}`}
-        style={{ width: "100%", height: "55vh" }}
+        style={{ width: "100%", height: "70vh" }}
       >
         {content}
       </div>
@@ -117,7 +112,7 @@ export const FloorMap = ({
   return (
     <div
       className={`relative rounded-2xl border border-border bg-card overflow-hidden ${className ?? ""}`}
-      style={{ width: "100%", height: "55vh" }}
+      style={{ width: "100%", height: "70vh" }}
     >
       <TransformWrapper
         initialScale={1}
@@ -129,7 +124,7 @@ export const FloorMap = ({
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
-            {/* 핵심 수정 3: contentClass에 flex와 중앙 정렬을 주어 지도가 화면 한가운데 예쁘게 배치되도록 함 */}
+            {/* 가운데 정렬 */}
             <TransformComponent
               wrapperClass="!w-full !h-full"
               contentClass="!w-full !h-full flex items-center justify-center"
@@ -137,7 +132,6 @@ export const FloorMap = ({
               {content}
             </TransformComponent>
 
-            {/* 컨트롤 버튼 디자인 */}
             <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 z-10">
               <Button type="button" size="icon" variant="secondary"
                 className="h-9 w-9 shadow-soft bg-background/95 backdrop-blur"
