@@ -61,10 +61,7 @@ export const PostForm = ({ mode, initialValues, submitting, onSubmit }: PostForm
     };
   }, [preview]);
 
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-const fileInputRef = useRef<HTMLInputElement>(null);
-
-const addTag = () => {
+  const addTag = () => {
     const t = tagInput.trim().replace(/^#/, "");
     if (t && !tags.includes(t) && tags.length < 8) setTags([...tags, t]);
     setTagInput("");
