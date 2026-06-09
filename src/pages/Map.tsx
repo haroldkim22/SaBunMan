@@ -32,18 +32,17 @@ const Map = () => {
 
   return (
     <AppLayout>
-      <div className="container px-4 py-6 md:py-8">
-        {/* 헤더 영역: 모바일 배려하여 여백 축소 */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+      <div className="container py-8 px-4 md:px-8">
+        {/* 상단 헤더 영역 */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="font-display text-2xl md:text-4xl font-bold">학교 지도</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">미해결 분실물 위치를 한눈에 · 마커를 클릭하세요</p>
+            <h1 className="font-display text-3xl md:text-4xl font-bold">학교 지도</h1>
+            <p className="text-muted-foreground mt-1">미해결 분실물 위치를 한눈에 · 마커를 클릭하세요</p>
           </div>
-          {/* 필터 버튼: 모바일에서 꽉 차게 혹은 자연스럽게 흐르도록 설정 */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0 sm:flex-wrap">
+          <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 md:flex-wrap scrollbar-none">
             {(["all", "found", "lost"] as const).map((f) => (
               <Button key={f} size="sm" variant={filter === f ? "default" : "outline"}
-                className={`text-xs md:text-sm whitespace-nowrap ${filter === f ? "gradient-hero text-primary-foreground border-0" : ""}`}
+                className={`whitespace-nowrap ${filter === f ? "gradient-hero text-primary-foreground border-0" : ""}`}
                 onClick={() => setFilter(f)}>
                 {f === "all" ? "전체" : f === "found" ? "주웠어요" : "잃어버렸어요"}
               </Button>
@@ -51,23 +50,22 @@ const Map = () => {
           </div>
         </div>
 
-        {/* 메인 레이아웃: lg 미만 화면에서는 세로 배치 */}
-        <div className="grid lg:grid-cols-[160px_1fr] gap-4 md:gap-6">
+        {/* 메인 그리드 레이아웃: PC 비율인 [200px_1fr]과 gap-6 완벽 복구 */}
+        <div className="grid lg:grid-cols-[200px_1fr] gap-6">
           
-          {/* 💡 최적화 포인트 1: 층수 선택부 */}
-          {/* 모바일에서는 가로로 넘기는 스크롤 바(flex-row) / 데스크톱에서는 세로 정렬(lg:flex-col) */}
+          {/* 층수 선택 버튼 영역 */}
+          {/* PC에서는 원래대로 세로 배치(lg:flex-col), 모바일에서만 가로 스크롤바로 자동 전환 */}
           <div className="flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none snap-x">
+            <div className="hidden lg:block text-xs font-bold text-muted-foreground tracking-wider mb-2">FLOOR</div>
             {[5, 4, 3, 2, 1].map((f) => (
               <button 
                 key={f} 
                 onClick={() => setFloor(f)}
-                className={`flex-1 lg:flex-initial min-w-[75px] sm:min-w-[100px] lg:w-full text-center lg:text-left p-2.5 lg:p-4 rounded-xl border transition-all snap-start ${
-                  floor === f 
-                    ? "border-primary bg-primary text-primary-foreground shadow-soft" 
-                    : "border-border bg-card hover:border-primary/50"
+                className={`flex-1 lg:flex-initial min-w-[80px] lg:w-full text-center lg:text-left p-3 lg:p-4 rounded-xl border transition-all snap-start ${
+                  floor === f ? "border-primary bg-primary text-primary-foreground shadow-soft" : "border-border bg-card hover:border-primary/50"
                 }`}
               >
-                <div className="font-display text-lg lg:text-2xl font-bold">{f}F</div>
+                <div className="font-display text-xl lg:text-2xl font-bold">{f}F</div>
                 <div className={`text-[10px] lg:text-xs mt-0.5 ${floor === f ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                   {markers.filter((m) => m.floor === f).length}건
                 </div>
@@ -75,13 +73,13 @@ const Map = () => {
             ))}
           </div>
 
-          {/* 지도 컨테이너 */}
+          {/* 지도 컨테이너 영역 */}
           <div>
-            {/* 💡 최적화 포인트 2: 모바일/데스크톱 높이 이원화 */}
-            {/* 모바일(기본)에서는 화면의 45% 정도만 차지하게 하여 하단 여백(스크롤 탈출용) 확보, 데스크톱에서 커짐 */}
+            {/* 💡 PC 스크린샷의 비율을 유지하기 위해 Tailwind의 반응형 임의값 클래스로 분리했습니다. */}
+            {/* 기본(모바일): 적당한 높이(h-[45vh]) 유지하여 스크롤 갇힘 방지 */}
+            {/* lg(PC): 기존 소스코드의 원래 비율인 h-[min(65vh,720px)] 및 max-h-[calc(100vh-240px)] 완벽 복원 */}
             <div
-              className="relative w-full overflow-hidden rounded-2xl md:rounded-3xl border border-border bg-card shadow-soft"
-              style={{ height: "calc(var(--vh, 1vh) * 45)", minHeight: "340px", maxHeight: "680px" }}
+              className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-soft h-[45vh] min-h-[360px] lg:h-[min(65vh,720px)] lg:max-h-[calc(100vh-240px)]"
             >
               <div className="h-full w-full">
                 <FloorMap
@@ -93,11 +91,11 @@ const Map = () => {
               </div>
             </div>
             
-            {/* 안내 배지 및 설명 */}
-            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs md:text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-success" />주웠어요</div>
-              <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-warning" />잃어버렸어요</div>
-              <Badge variant="secondary" className="ml-auto text-[11px] px-2 py-0.5">{visible.length}개 표시중</Badge>
+            {/* 하단 안내 라벨 */}
+            <div className="mt-4 flex gap-4 text-sm">
+              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-success" />주웠어요</div>
+              <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-warning" />잃어버렸어요</div>
+              <Badge variant="secondary" className="ml-auto">{visible.length}개 표시중</Badge>
             </div>
           </div>
 
