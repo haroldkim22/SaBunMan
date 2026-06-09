@@ -107,7 +107,7 @@ const Feed = () => {
 
           {trendingTags.length > 0 && (
             <div className="mt-3.5 flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 no-scrollbar whitespace-nowrap touch-pan-x">
-              <span className="text-[11px] md:text-xs font-medium text-muted-foreground shrink-0 mr-1">추천 태그</span>
+              <span className="text-[11px] md:text-xs font-medium text-muted-foreground shrink-0 mr-1">태그</span>
               {trendingTags.map((t) => (
                 <button key={t} onClick={() => setQ(t)}
                   className="text-[11px] md:text-xs px-2.5 py-0.5 md:py-1 rounded-full bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors shrink-0">
