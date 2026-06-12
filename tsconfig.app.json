@@ -23,6 +23,10 @@
     "noFallthroughCasesInSwitch": false,
 
     "paths": {
+      "@/hooks/*": ["./src/modules/hooks/*"],
+      "@/contexts/*": ["./src/modules/contexts/*"],
+      "@/integrations/*": ["./src/modules/integrations/*"],
+      "@/lib/*": ["./src/modules/lib/*"],
       "@/*": ["./src/*"]
     }
   },
